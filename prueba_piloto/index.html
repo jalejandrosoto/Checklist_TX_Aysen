@@ -840,7 +840,9 @@
         document.getElementById('btn-submit-wrapper').style.display = 'none';
         
         document.getElementById('resultados').style.display = 'block';
-        document.getElementById('final-score').innerText = notaFinal;
+        
+        // Inyectamos la nota forzando siempre 1 decimal (ej. 7.0) y agregamos el /10 más pequeño
+        document.getElementById('final-score').innerHTML = notaFinal.toFixed(1) + '<span style="font-size: 1.8rem; font-weight: 500; color: #9ca3af; margin-left: 4px;">/10</span>';
         document.getElementById('final-score').style.color = colorScore;
         
         // Despliegue con jerarquía visual profesional (Badge + Texto Neutro + Borde de Acento)
