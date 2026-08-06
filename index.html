@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist para Evaluación de la Experiencia del Turista - Región de Aysén</title>
+    
+    <!-- Librería para generar el PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root { 
+            --primary: #2b4c7e; 
+            --secondary: #4a90e2; 
+            --success: #10b981;
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --text: #374151;
+            --border: #e2e8f0;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; padding: 0; color: var(--text); }
+        
+        .app-container { max-width: 800px; margin: 0 auto; background: var(--bg); min-height: 100vh; position: relative; padding-bottom: 90px; }
+        
+        /* Cabecera Fija Unificada */
+        .sticky-header { position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: white; }
+        .header { background: var(--primary); color: white; padding: 12px 20px; display: flex; flex-direction: column; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header h2 { margin: 0; font-size: 1.1rem; font-weight: 600; line-height: 1.3; }
+        
+        /* Botones unificados para la cabecera */
+        /* Botones unificados y VISIBLES para la cabecera */
+        .btn-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            background: #ffffff; /* Fondo blanco sólido para que resalte */
+            color: var(--primary); /* Letras e íconos en el azul del tema */
+            border: none; 
+            border-radius: 6px; 
+            padding: 6px 12px; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            transition: all 0.2s ease; 
+        }
+        .btn-header:hover { 
+            background: #f1f5f9; /* Se oscurece a un celeste muy suave al tocarlo */
+            transform: translateY(-1px); /* Da la sensación de ser presionable */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15); 
+        }
+
+        /* Mejora visual del botón X de los modales */
+        .close-modal { 
+            position: absolute; top: 15px; right: 15px; 
+            background: #f1f5f9; color: #64748b; 
+            border: none; border-radius: 50%; 
+            width: 30px; height: 30px; 
+            font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: 0.2s;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .close-modal:hover { background: #e2e8f0; color: #0f172a; } 
+        
+        .progress-bar-container { background: rgba(255,255,255,0.2); height: 6px; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+        .progress-fill { background: var(--success); height: 100%; width: 0%; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.8rem; margin-top: 5px; font-weight: 500; text-align: right; }
+
+        /* Pestañas */
+        .tabs { display: flex; border-bottom: 1px solid var(--border); overflow-x: auto; }
+        .tab { flex: 1; padding: 12px 5px; text-align: center; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #6b7280; border-bottom: 3px solid transparent; }
+        .tab.active { color: var(--secondary); border-bottom-color: var(--secondary); background: #f8fafc; }
+
+        /* Pestaña con aviso de ítems pendientes (Opción A) */
+        .tab.incomplete {
+            color: #dc2626 !important;
+            border-bottom-color: #dc2626 !important;
+            background-color: #fef2f2;
+            font-weight: bold;
+        }
+        .tab.incomplete::after {
+            content: " ⚠️";
+        }
+
+        /* Pantallas (0 y 1) */
+        #pantalla-cero, #pantalla-inicio { padding: 30px 20px; background: var(--card); border-radius: 8px; margin: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center; }
+        #pantalla-inicio { border-top: 5px solid var(--secondary); max-width: 700px; margin: 20px auto; }
+        #pantalla-cero h1 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4; text-transform: uppercase; }
+        
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #111827; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
+        
+        .instrucciones-caja { background: #eff6ff; border-left: 4px solid var(--secondary); padding: 15px; margin-top: 25px; margin-bottom: 20px; font-size: 0.95rem; text-align: left;}
+        .escala-lista { list-style-type: none; padding: 0; margin: 0; }
+        .escala-lista li { margin-bottom: 8px; font-weight: 500; }
+
+        .tag-pastel-0 { background: #E0F2FE; color: #0284C7; }
+        .tag-pastel-1 { background: #DCFCE7; color: #059669; }
+        .tag-pastel-2 { background: #FEF9C3; color: #D97706; }
+        .tag-pastel-3 { background: #FCE7F3; color: #DB2777; }
+        .tag-pastel-4 { background: #F3E8FF; color: #7E22CE; }
+        .tag-pastel-5 { background: #ECFCCB; color: #65A30D; }
+        .tag-pastel-6 { background: #FFEDD5; color: #C2410C; }
+        .tag-pastel-7 { background: #E0E7FF; color: #4F46E5; }
+        .tag-pastel-8 { background: #FEE2E2; color: #E11D48; }
+
+        .content { display: none; padding: 15px; }
+        .content.active { display: block; }
+
+        /* Tarjeta de Pregunta */
+        .card { background: var(--card); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+        .tags { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; gap: 6px; flex-wrap: wrap; }
+        .tag-dim { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid rgba(0,0,0,0.05); }
+        .question { margin: 0 0 15px 0; font-size: 1.05rem; line-height: 1.5; color: #111827; font-weight: 500; }
+
+        /* Escala Likert */
+        .likert { display: flex; justify-content: space-between; gap: 5px; margin-bottom: 15px; }
+        .likert button { flex: 1; padding: 12px 0; border: 1px solid #d1d5db; background: #ffffff; border-radius: 6px; font-weight: bold; font-size: 1.1rem; cursor: pointer; color: #4b5563; transition: 0.2s; }
+        .likert button.selected { background: var(--secondary); color: white; border-color: var(--secondary); }
+        .likert button[data-val="N/A"].selected { background: #6b7280; border-color: #6b7280; color: white; }
+        
+        textarea { width: 100%; box-sizing: border-box; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #f9fafb; font-family: inherit; font-size: 0.9rem; resize: vertical; min-height: 80px; }
+        textarea:focus { outline: none; border-color: var(--secondary); background: #ffffff; }
+
+        .nav-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .btn-nav { flex: 1; padding: 12px; background: #e5e7eb; color: var(--text); border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        
+        .btn-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100; padding: 15px 0; background: linear-gradient(to top, rgba(243,244,246,1) 70%, rgba(243,244,246,0)); pointer-events: none; }
+        .btn-main { width: calc(100% - 30px); max-width: 770px; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; pointer-events: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-main.disabled { background: #9ca3af; cursor: not-allowed; }
+        .btn-main:disabled { background: #9ca3af; cursor: not-allowed; opacity: 0.7; }
+
+        #resultados, #pantalla-encuesta, #pantalla-despedida { display: none; padding: 20px; text-align: center; }
+        .score-box { background: white; padding: 30px; border-radius: 10px; border-top: 6px solid var(--success); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .score-val { font-size: 3.5rem; font-weight: bold; color: var(--primary); margin: 10px 0; }
+        
+        .encuesta-pregunta { text-align: left; margin-bottom: 25px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .encuesta-pregunta p { font-weight: 600; color: #111827; margin-top: 0; }
+        .encuesta-opciones label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: #4b5563; cursor: pointer; }
+        
+        /* Modales */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; width: 90%; max-width: 450px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; background: #e5e7eb; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: bold; cursor: pointer; }
+
+        /* Estilo para el PDF */
+        .pdf-table tr { page-break-inside: avoid !important; }
+        
+        
+        /* ========================================= */
+        /* AJUSTES RESPONSIVOS PARA CELULARES        */
+        /* ========================================= */
+        @media (max-width: 600px) {
+            /* Achicar la cabecera y sus botones */
+            .header { padding: 10px 12px; }
+            .header-top { gap: 6px; flex-wrap: wrap; justify-content: center;}
+            .header h2 { font-size: 0.9rem; text-align: center; margin-bottom: 8px; width: 100%; order: -1; }
+            .btn-header { padding: 5px 8px; font-size: 0.75rem; flex: 1; justify-content: center; }
+            .btn-header svg { width: 14px; height: 14px; }
+            
+            /* Comprimir las tarjetas de preguntas */
+            .card { padding: 12px; margin-bottom: 15px; }
+            .question { font-size: 0.95rem; margin-bottom: 10px; }
+            
+            /* Ajustar la Escala Likert para que quepa en la pantalla sin desbordarse */
+            .likert { gap: 3px; }
+            .likert button { padding: 8px 0; font-size: 0.9rem; }
+            
+            /* Reducir títulos y contenedores iniciales */
+            #pantalla-cero, #pantalla-inicio { padding: 20px 15px; margin: 10px; }
+            #pantalla-cero h1 { font-size: 1.15rem; }
+            #pantalla-inicio h2 { font-size: 1.2rem; }
+            .form-group label { font-size: 0.9rem; }
+            .form-group input[type="text"], .form-group input[type="date"], .form-group select { padding: 8px; font-size: 0.95rem; }
+            
+            /* Ajustar pestañas de navegación */
+            .tab { padding: 10px 2px; font-size: 0.8rem; }
+            
+            /* Ajustar botón inferior */
+            .btn-main { font-size: 1rem; padding: 12px; }
+        }
+    
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- PANTALLA 0: Bienvenida y Consentimiento -->
+    <div id="pantalla-cero">
+        <h1>CHECKLIST PARA EVALUACIÓN DE LA EXPERIENCIA DEL TURISTA - REGIÓN DE AYSÉN</h1>
+        
+        <div style="text-align: justify; font-size: 0.9rem; margin-bottom: 20px; padding: 15px; background: #f1f5f9; border-radius: 6px; overflow-y: auto; max-height: 250px; border: 1px solid #cbd5e1;">
+            <strong>Declaración de Consentimiento Informado</strong><br><br>
+            En base a lo expuesto en el documento de información del estudio, acepto voluntariamente participar en el estudio de nombre "Checklist para la Evaluación de la Experiencia del Turista, Caso de Estudio: Región de Aysén" cuyo autor es Juan Soto Chandía, y enmarcado en el proyecto titulado "Evaluating the Post-Pandemic Tourist eXperience (Evaluando la experiencia del turista post-pandemia)", cuyo Investigador Responsable es el Profesor Cristian Rusu, de la Escuela de Ingeniería Informática, perteneciente a la Pontificia Universidad Católica de Valparaíso, Chile.<br><br>
+            He sido informado(a) de los objetivos, alcance y resultados esperados de este estudio y de las características de mi participación en esta prueba piloto en terreno (aplicación del checklist en un servicio turístico y evaluación de su usabilidad).<br><br>
+            Autorizo explícitamente el registro y uso académico de la información resultante de la evaluación del servicio turístico. Reconozco y acepto que toda la información recopilada en el curso de esta investigación, tanto mis datos personales como la identificación del servicio evaluado, será tratada de manera estrictamente confidencial y anónima. Además, esta información no será usada para ningún otro propósito fuera de los de este estudio.<br><br>
+            He sido informado(a) de que puedo hacer preguntas sobre el proyecto en cualquier momento y que puedo retirarme del mismo cuando así lo decida, sin tener que dar explicaciones ni sufrir consecuencia alguna por tal decisión.<br><br>
+            De tener preguntas sobre mi participación en este estudio, puedo contactar al Presidente del Comité de Bioética y Bioseguridad de la Pontificia Universidad Católica de Valparaíso (bioetica@pucv.cl; 032-2273286).<br><br>
+            Entiendo que puedo pedir información sobre los resultados de este estudio cuando haya concluido. Para esto, puedo contactar al Investigador Responsable del proyecto al correo electrónico cristian.rusu@pucv.cl, o al teléfono (+56) 9 88244506.
+        </div>
+
+        <label style="display: block; margin-bottom: 25px; font-weight: bold; cursor: pointer; text-align: left; padding: 10px; background: #e0f2fe; border-radius: 6px; border: 1px solid #bae6fd;">
+            <input type="checkbox" id="consentimiento" style="transform: scale(1.2); margin-right: 10px;"> ¿Acepta participar? He leído la declaración y acepto participar.
+        </label>
+
+        <button class="btn-main" onclick="irPantallaDatos()">Continuar</button>
+    </div>
+
+    <!-- PANTALLA 1: Datos del servicio -->
+    <div id="pantalla-inicio" style="display: none;">
+        <h2 style="font-size: 1.4rem; color: var(--primary); margin-bottom: 15px; text-transform: uppercase;">Datos del servicio</h2>
+        <p style="color: #4b5563; margin-bottom: 25px; text-align: left;">Por favor, complete los datos requeridos para iniciar.</p>
+
+        <div style="background:#f1f5f9; padding:20px; border-radius:8px; border:1px solid #cbd5e1; margin-bottom:25px;">
+            <div class="form-group">
+                <label for="meta-servicio">(1) Servicio evaluado: *</label>
+                <input type="text" id="meta-servicio" placeholder="Ej. Lodge Patagonia, Tour Glaciar...">
+            </div>
+            
+            <div class="form-group">
+                <label>(2)  Rubro del servicio evaluado (seleccione uno o más): *</label>
+                <div style="background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 12px; margin-top: 5px;">
+                    <label style="display:block; margin-bottom:8px; cursor:pointer; font-weight:normal;">
+                        <input type="checkbox" name="meta_rubro" value="Alojamiento" style="width:auto; margin-right:8px;"> Alojamiento
+                    </label>
+                    <label style="display:block; margin-bottom:8px; cursor:pointer; font-weight:normal;">
+                        <input type="checkbox" name="meta_rubro" value="Gastronomía" style="width:auto; margin-right:8px;"> Gastronomía
+                    </label>
+                    <label style="display:block; margin-bottom:8px; cursor:pointer; font-weight:normal;">
+                        <input type="checkbox" name="meta_rubro" value="Turismo Aventura" style="width:auto; margin-right:8px;"> Turismo Aventura
+                    </label>
+                    <label style="display:block; margin-bottom:8px; cursor:pointer; font-weight:normal;">
+                        <input type="checkbox" name="meta_rubro" value="Transporte" style="width:auto; margin-right:8px;"> Transporte
+                    </label>
+                    <label style="display:block; margin-bottom:4px; cursor:pointer; font-weight:normal;">
+                        <input type="checkbox" name="meta_rubro" value="Otro" onchange="document.getElementById('meta-rubro-otro').style.display = this.checked ? 'block' : 'none';" style="width:auto; margin-right:8px;"> Otro (Especificar)
+                    </label>
+                    <input type="text" id="meta-rubro-otro" placeholder="Especifique el rubro" style="display:none; margin-top:10px; width:100%; box-sizing:border-box;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="meta-fecha">(3) Fecha de evaluación: *</label>
+                <input type="date" id="meta-fecha">
+            </div>
+            <div class="form-group">
+                <label for="meta-evaluador">(4) Nombre Evaluador: *</label>
+                <input type="text" id="meta-evaluador" placeholder="Su nombre y apellido">
+            </div>
+
+            <div class="form-group">
+                <label for="meta-rol">(5) Rol del Evaluador en el servicio: *</label>
+                <select id="meta-rol">
+                    <option value="">Seleccione una opción...</option>
+                    <option value="Administrador / Dueño">Administrador / Dueño</option>
+                    <option value="Guía de turismo">Guía de turismo</option>
+                    <option value="Evaluador externo">Evaluador externo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="meta-experiencia">(6) Años de experiencia del evaluador en el rubro turístico: *</label>
+                <select id="meta-experiencia">
+                    <option value="">Seleccione una opción...</option>
+                    <option value="Menos de 2 años">Menos de 2 años</option>
+                    <option value="Entre 2 y 5 años">Entre 2 y 5 años</option>
+                    <option value="Más de 5 años">Más de 5 años</option>
+                </select>
+            </div>
+
+            <button class="btn-main" style="width: 100%; position: relative; pointer-events: auto;" onclick="iniciarApp()">Guardar datos y Comenzar</button>
+        </div>
+    </div>
+
+
+    <!-- CABECERA FIJA Y PESTAÑAS AGRUPADAS -->
+    <div class="sticky-header" id="header-container" style="display: none;">
+        <div class="header">
+            <div class="header-top">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <!-- Botón Volver Armónico -->
+                    <button class="btn-header" onclick="volverInicio()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Volver
+                    </button>
+                    <h2 style="font-size:1.05rem; margin:0; line-height: 1.3;">Checklist para Evaluación de la Experiencia del Turista - Región de Aysén</h2>
+                </div>
+                <!-- Botón Escala Armónico -->
+                <button class="btn-header" onclick="abrirModalAyuda()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    Escala
+                </button>
+            </div>
+            <div class="progress-bar-container"><div class="progress-fill" id="progress-bar"></div></div>
+            <div class="progress-text" id="progress-text">0 / 43 Completados</div>
+        </div>
+        
+        <!-- Pestañas -->
+        <div class="tabs" id="tabs">
+            <div class="tab active" onclick="cambiarPestana('pre-viaje', 0, 'Pre-viaje')">Pre-viaje</div>
+            <div class="tab" onclick="cambiarPestana('durante-viaje', 1, 'Durante el viaje')">Durante el viaje</div>
+            <div class="tab" onclick="cambiarPestana('post-viaje', 2, 'Post-viaje')">Post-viaje</div>
+        </div>
+    </div>
+
+    <!-- Contenedores de Preguntas -->
+    <div id="pre-viaje" class="content"></div>
+    <div id="durante-viaje" class="content"></div>
+    <div id="post-viaje" class="content"></div>
+
+    <!-- Botón Generar Reporte -->
+    <div class="btn-wrapper" id="btn-submit-wrapper" style="display: none;">
+        <button class="btn-main disabled" id="btn-generar" onclick="validarYGenerar()">Faltan preguntas por contestar</button>
+    </div>
+
+    <!-- Resultados -->
+    <div id="resultados">
+        <div class="score-box">
+            <div style="font-size: 1rem; color: #6b7280; font-weight: 600;">NOTA GLOBAL PONDERADA</div>
+            <div class="score-val" id="final-score">0.0</div>
+            <h3 id="final-label" style="margin: 0; color: #374151;"></h3>
+        </div>
+        <p style="color:#4b5563;font-size:1rem;line-height:1.6;margin-bottom:25px;">
+            Antes de finalizar, responda una breve encuesta sobre este instrumento.<br><br>
+            <strong>Al enviarla, se descargará automáticamente el PDF de su evaluación.</strong>
+        </p>
+        <button class="btn-main" style="width: 100%;" onclick="mostrarEncuesta()">Ir a la Encuesta →</button>
+    </div>
+
+    <!-- Encuesta -->
+    <div id="pantalla-encuesta">
+        <h2 style="color: var(--primary);">Evaluación del Instrumento</h2>
+        
+        <div class="encuesta-pregunta">
+            <p>1. Claridad: En general, ¿los criterios del checklist e instrucciones fueron claros de interpretar durante la evaluación?  *</p>
+            <div class="encuesta-opciones">
+                <label><input type="radio" name="enc_q1" value="1"> 1: Muy confusos</label>
+                <label><input type="radio" name="enc_q1" value="2"> 2: Poco claros</label>
+                <label><input type="radio" name="enc_q1" value="3"> 3: Neutral</label>
+                <label><input type="radio" name="enc_q1" value="4"> 4: Claros</label>
+                <label><input type="radio" name="enc_q1" value="5"> 5: Muy claros</label>
+            </div>
+        </div>
+        <div class="encuesta-pregunta">
+            <p>2. Facilidad de uso: ¿Qué tan cómoda y fluida fue la aplicación del checklist *</p>
+            <div class="encuesta-opciones">
+                <label><input type="radio" name="enc_q2" value="1"> 1: Muy difícil</label>
+                <label><input type="radio" name="enc_q2" value="2"> 2: Incómoda</label>
+                <label><input type="radio" name="enc_q2" value="3"> 3: Neutral</label>
+                <label><input type="radio" name="enc_q2" value="4"> 4: Cómoda / Fácil</label>
+                <label><input type="radio" name="enc_q2" value="5"> 5: Totalmente fluida</label>
+            </div>
+        </div>
+        <div class="encuesta-pregunta">
+            <p>3. Longitud / Tiempo: ¿Considera que la cantidad de ítems (43) y el tiempo requerido fueron adecuados? *</p>
+            <div class="encuesta-opciones">
+                <label><input type="radio" name="enc_q3" value="1"> 1: Excesivamente largo</label>
+                <label><input type="radio" name="enc_q3" value="2"> 2: Algo extenso</label>
+                <label><input type="radio" name="enc_q3" value="3"> 3: Neutral / Aceptable</label>
+                <label><input type="radio" name="enc_q3" value="4"> 4: Adecuados</label>
+                <label><input type="radio" name="enc_q3" value="5"> 5: Cantidad óptima</label>
+            </div>
+        </div>
+        <div class="encuesta-pregunta">
+            <p>4. Utilidad: ¿Utilizaría este checklist para evaluar servicios turísticos en el futuro? *</p>
+            <div class="encuesta-opciones">
+                <label><input type="radio" name="enc_q4" value="1"> 1: Definitivamente NO</label>
+                <label><input type="radio" name="enc_q4" value="2"> 2: Probablemente NO</label>
+                <label><input type="radio" name="enc_q4" value="3"> 3: Neutral</label>
+                <label><input type="radio" name="enc_q4" value="4"> 4: Probablemente SÍ</label>
+                <label><input type="radio" name="enc_q4" value="5"> 5: Definitivamente SÍ</label>
+            </div>
+        </div>
+        <div class="encuesta-pregunta">
+            <p>5. Sugerencias: ¿Qué cambios o mejoras le harías al checklist para la versión final?</p>
+            <textarea id="enc_q5" placeholder="Escriba aquí sus sugerencias..."></textarea>
+        </div>
+        
+        <button id="btn-enviar-final" class="btn-main" style="width: 100%; background: var(--success);" onclick="finalizarYDescargar()">Finalizar y Descargar PDF</button>
+    </div>
+
+    <!-- Despedida -->
+    <div id="pantalla-despedida">
+        <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); margin: 30px auto; max-width: 650px;">
+            <h1 style="font-size: 3rem; margin: 0 0 15px 0;">🎉</h1>
+            <h2 style="color: var(--primary); font-size: 1.8rem; margin-top: 0;">¡Muchas gracias!</h2>
+            <p style="color: #4b5563; font-size: 1.1rem; line-height: 1.5; margin-bottom: 30px;">
+                Su evaluación fue registrada correctamente y el reporte en PDF se ha descargado.<br>
+                Gracias por colaborar en la validación de este instrumento.
+            </p>
+            <button class="btn-nav" style="width: 100%;" onclick="location.reload()">Realizar otra evaluación</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modales -->
+
+<!-- 3. Modal de Instrucciones Previas al inicio -->
+<div class="modal" id="modal-instrucciones">
+    <div class="modal-content" style="border-top: 6px solid var(--secondary);">
+        <h3 style="color: var(--primary); margin-top: 0;">Instrucciones de Evaluación</h3>
+        
+        <p style="margin-top:5px; margin-bottom: 10px; font-size: 0.95rem; color: #4b5563; text-align: left;">
+            Evalúe los ítems asignando una calificación de 1 a 5 considerando la siguiente escala de cumplimiento:
+        </p>
+        
+        <ul class="escala-lista" style="margin-top: 5px; font-size: 0.95rem; text-align: left; padding-left: 20px;">
+            <li style="margin-bottom: 8px;"><strong>1:</strong> Muy bajo o Nulo cumplimiento.</li>
+            <li style="margin-bottom: 8px;"><strong>2:</strong> Bajo cumplimiento.</li>
+            <li style="margin-bottom: 8px;"><strong>3:</strong> Cumplimiento medio (Aceptable).</li>
+            <li style="margin-bottom: 8px;"><strong>4:</strong> Alto cumplimiento.</li>
+            <li style="margin-bottom: 8px;"><strong>5:</strong> Cumplimiento Óptimo (Excelente).</li>
+            <li style="margin-bottom: 8px;"><strong>N/A:</strong> No Aplica</li>
+        </ul>
+
+        <div style="background: #eff6ff; padding: 12px; border-radius: 6px; margin-top: 15px; font-size: 0.9rem; color: #1e3a8a; text-align: left; line-height: 1.4;">
+            <p style="margin: 0 0 10px 0;"><strong>Importante:</strong> Conteste N/A si el ítem no aplica a la naturaleza u operatividad del servicio evaluado.</p>
+            <p style="margin: 0;">Utilice el espacio disponible para registrar las observaciones que crea pertinentes, evidencias o para justificar cumplimientos parciales o N/A.</p>
+        </div>
+        
+        <button class="btn-main" style="width: 100%; margin-top: 20px;" onclick="comenzarChecklist()">Entendido, ¡Comenzar!</button>
+    </div>
+</div>
+
+<div class="modal" id="modal-ayuda">
+    <div class="modal-content">
+        <button class="close-modal" onclick="cerrarModal('modal-ayuda')">X</button>
+        <h3 style="color: var(--primary); margin-top: 0;">Escala de Cumplimiento</h3>
+        <ul class="escala-lista" style="text-align: left; padding-left: 10px;">
+            <li style="margin-bottom: 10px;"><strong>1:</strong> Muy bajo o Nulo cumplimiento</li>
+            <li style="margin-bottom: 10px;"><strong>2:</strong> Bajo cumplimiento</li>
+            <li style="margin-bottom: 10px;"><strong>3:</strong> Cumplimiento medio (Aceptable)</li>
+            <li style="margin-bottom: 10px;"><strong>4:</strong> Alto cumplimiento</li>
+            <li style="margin-bottom: 10px;"><strong>5:</strong> Cumplimiento Óptimo (Excelente)</li>
+            <li style="margin-bottom: 10px;"><strong>N/A:</strong> No Aplica al servicio</li>
+        </ul>
+    </div>
+</div>
+
+<div class="modal" id="modal-error">
+    <div class="modal-content">
+        <h3 style="color: #dc2626; margin-top: 0;">Faltan Datos</h3>
+        <p id="error-msg"></p>
+        <button class="btn-nav" style="background: var(--primary); color: white; width: 100%; margin-top: 15px;" onclick="cerrarModal('modal-error')">Entendido</button>
+    </div>
+</div>
+
+<!-- Modal de Advertencia de Etapa Incompleta (Opción A) -->
+<div class="modal" id="modal-advertencia-etapa">
+    <div class="modal-content" style="border-top: 6px solid #f59e0b;">
+        <h3 style="color: #d97706; margin-top: 0;">⚠️ Ítems Pendientes en esta Etapa</h3>
+        <p style="font-size: 0.95rem; color: #374151; margin-bottom: 10px;">
+            Tienes ítems sin responder en esta sección:
+        </p>
+        
+        <!-- Lista de ítems faltantes -->
+        <div id="lista-faltantes-etapa" style="background: #fffbe0; border: 1px solid #fef08a; padding: 10px; border-radius: 6px; max-height: 120px; overflow-y: auto; text-align: left; font-size: 0.85rem; color: #854d0e; font-weight: 600; margin-bottom: 15px;"></div>
+
+        <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;">
+            ¿Qué deseas hacer?
+        </p>
+
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-nav" style="background: #e2e8f0; color: #1e293b;" onclick="cerrarModal('modal-advertencia-etapa')">
+                Revisar
+            </button>
+            <button class="btn-nav" style="background: var(--primary); color: white;" id="btn-avanzar-forzado">
+                Avanzar de todos modos →
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Lógica JavaScript -->
+<script src="items.js"></script>
+<script>
+    // Memoria local
+    let respuestas = JSON.parse(localStorage.getItem('tx_aysen_data')) || {};
+    let metadatos = JSON.parse(localStorage.getItem('tx_aysen_meta')) || { servicio: "", fecha: "", evaluador: "" };
+    
+    let totalItems = typeof checklistItems !== 'undefined' ? checklistItems.length : 0; 
+    
+    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbz2xPs710f8fV7Fhbo60qrL_CZX53xzek5WAZq_tyeml5Y8DS9zMW_TGd4IOq7_Byx82w/exec";
+
+    function irPantallaDatos() {
+        if (!document.getElementById('consentimiento').checked) {
+            mostrarError("Debe aceptar la declaración de consentimiento para participar.");
+            return;
+        }
+        document.getElementById('pantalla-cero').style.display = 'none';
+        document.getElementById('pantalla-inicio').style.display = 'block';
+        
+        document.getElementById('meta-servicio').value = metadatos.servicio;
+        document.getElementById('meta-fecha').value = metadatos.fecha;
+        document.getElementById('meta-evaluador').value = metadatos.evaluador;
+    }
+
+    function volverInicio() {
+        document.getElementById('header-container').style.display = 'none';
+        document.getElementById('btn-submit-wrapper').style.display = 'none';
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.getElementById('pantalla-inicio').style.display = 'block';
+    }
+
+    function mostrarError(mensaje) {
+        document.getElementById('error-msg').innerText = mensaje;
+        document.getElementById('modal-error').style.display = 'flex';
+    }
+
+    function iniciarApp() {
+        let erroresDetectados = [];
+
+        // 1. Servicio
+        const serv = document.getElementById("meta-servicio").value.trim();
+        if (serv === "") erroresDetectados.push("(1) Servicio evaluado.");
+
+        // 2. Rubro
+        let rubrosSeleccionados = [];
+        const checkboxes = document.getElementsByName("meta_rubro");
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked) rubrosSeleccionados.push(checkboxes[i].value);
+        }
+        const rubroOtro = document.getElementById("meta-rubro-otro").value.trim();
+        
+        if (rubrosSeleccionados.length === 0) {
+            erroresDetectados.push("(2) Rubro del servicio (marque al menos uno).");
+        } else if (rubrosSeleccionados.indexOf("Otro") !== -1 && rubroOtro === "") {
+            erroresDetectados.push("(2) Especifique cuál es el 'Otro' rubro.");
+        }
+
+        // 3. Fecha
+        const fech = document.getElementById("meta-fecha").value;
+        if (fech === "") erroresDetectados.push("(3) Fecha de evaluación.");
+
+        // 4. Evaluador
+        const eva = document.getElementById("meta-evaluador").value.trim();
+        if (eva === "") erroresDetectados.push("(4) Nombre Evaluador.");
+
+        // 5. Rol
+        const rolSelect = document.getElementById("meta-rol");
+        const rol = rolSelect.options[rolSelect.selectedIndex].value;
+        if (rol === "") erroresDetectados.push("(5) Rol del Evaluador.");
+
+        // 6. Experiencia
+        const expSelect = document.getElementById("meta-experiencia");
+        const exp = expSelect.options[expSelect.selectedIndex].value;
+        if (exp === "") erroresDetectados.push("(6) Años de experiencia.");
+
+        // ¿HAY ERRORES? Bloquea el paso
+        if (erroresDetectados.length > 0) {
+            let mensajeFinal = "No puede continuar. Faltan los siguientes datos obligatorios:\n\n" + erroresDetectados.join("\n");
+            mostrarError(mensajeFinal);
+            return; 
+        }
+
+        // Si pasó el candado, guardamos en memoria
+        metadatos = { 
+            servicio: serv, 
+            rubro: rubrosSeleccionados,
+            rubroOtro: rubroOtro,
+            fecha: fech, 
+            evaluador: eva,
+            rol: rol,
+            experiencia: exp
+        };
+        localStorage.setItem("tx_aysen_meta", JSON.stringify(metadatos));
+
+        // En lugar de pasar directo al checklist, abrimos el Pop-up de instrucciones
+        document.getElementById('modal-instrucciones').style.display = 'flex';
+    }
+
+    // NUEVA FUNCIÓN: Se ejecuta al presionar "Entendido, ¡Comenzar!" en el pop-up
+    function comenzarChecklist() {
+        // Ocultamos el pop-up
+        document.getElementById('modal-instrucciones').style.display = 'none';
+        
+        // Hacemos la transición a la pantalla del Checklist
+        document.getElementById("pantalla-inicio").style.display = "none";
+        document.getElementById("header-container").style.display = "block";
+        document.getElementById("btn-submit-wrapper").style.display = "flex";
+
+        renderizarFormulario();
+        cambiarPestana("pre-viaje", 0, "Pre-viaje");
+    }
+
+    function renderizarFormulario() {
+        if(totalItems === 0) return;
+        
+        document.getElementById('pre-viaje').innerHTML = '';
+        document.getElementById('durante-viaje').innerHTML = '';
+        document.getElementById('post-viaje').innerHTML = '';
+
+        checklistItems.forEach((item, index) => {
+            const etapa = item.etapa.trim().toLowerCase();
+            const mapa = {
+                "pre-viaje": "pre-viaje", "pre viaje": "pre-viaje",
+                "durante-viaje": "durante-viaje", "durante viaje": "durante-viaje",
+                "post-viaje": "post-viaje", "post viaje": "post-viaje"
+            };
+
+            const container = document.getElementById(mapa[etapa]);
+            const r = respuestas[item.id] || { nota: null, obs: "" };
+            const numPregunta = index + 1;
+            
+            const div = document.createElement('div');
+            div.className = 'card';
+            
+            const etiquetasHTML = item.dimension.split('/').map((dim) => {
+                let d = dim.trim().toLowerCase();
+                let c = 0;
+                if (d.includes("cognitiva")) c = 0;
+                else if (d.includes("pragmática") || d.includes("pragmatica")) c = 1;
+                else if (d.includes("sensorial")) c = 2;
+                else if (d.includes("relacional")) c = 3;
+                else if (d.includes("emocional")) c = 4;
+                else if (d.includes("sostenibilidad")) c = 5;
+                else if (d.includes("cultura local")) c = 6;
+                else if (d.includes("conductual")) c = 7;
+                else if (d.includes("novedad")) c = 8;
+                return `<span class="tag-dim tag-pastel-${c}">${dim.trim()}</span>`;
+            }).join(' <span style="color:#9ca3af; font-weight:bold;">/</span> ');
+
+            div.innerHTML = `
+                <div class="tags">
+                    <span style="font-size:0.82rem;font-weight:700;color:#4b5563;">Dimensión TX:</span>
+                    ${etiquetasHTML}
+                </div>
+                <p class="question"><strong>Ítem ${numPregunta}.</strong> ${item.texto}</p>
+                <div class="likert" id="likert-${item.id}">
+                    ${[1,2,3,4,5].map(v => `<button data-val="${v}" class="${r.nota === v ? 'selected' : ''}" onclick="guardarDato('${item.id}', ${v})">${v}</button>`).join('')}
+                    <button data-val="N/A" class="${r.nota === 'N/A' ? 'selected' : ''}" style="font-size:0.85rem;" onclick="guardarDato('${item.id}', 'N/A')">N/A</button>
+                </div>
+                <textarea placeholder="Registro de observaciones o justificación..." onchange="guardarObs('${item.id}', this.value)">${r.obs}</textarea>
+            `;
+            if (container) container.appendChild(div);
+        });
+
+        // NAVEGACIÓN REPARADA
+        agregarBotonesNavegacion('pre-viaje', null, 1, 'durante-viaje', 'Durante el viaje');
+        agregarBotonesNavegacion('durante-viaje', 0, 2, 'post-viaje', 'Post-viaje');
+        agregarBotonesNavegacion('post-viaje', 1, null, null, null);
+
+        actualizarUI();
+    }
+
+    // FUNCIÓN DE NAVEGACIÓN REPARADA (No más matemáticas raras)
+    function agregarBotonesNavegacion(actualContainer, prevTabIdx, nextTabIdx, nextTabId, nextName) {
+        const container = document.getElementById(actualContainer);
+        const div = document.createElement('div');
+        div.className = 'nav-buttons';
+        let html = '';
+        
+        if(prevTabIdx !== null) {
+            html += `<button class="btn-nav" onclick="document.querySelectorAll('.tab')[${prevTabIdx}].click()">← Anterior</button>`;
+        } else {
+            html += `<div></div>`;
+        }
+        
+        if(nextTabIdx !== null) {
+            // Llama a la validación flexible de la Opción A
+            html += `<button class="btn-nav" style="background:var(--primary); color:white;" onclick="verificarEtapaAvanzar('${actualContainer}', '${nextTabId}', ${nextTabIdx}, ${prevTabIdx !== null ? prevTabIdx + 1 : 0})">Siguiente →</button>`;
+        } else {
+            html += `<div></div>`;
+        }
+        
+        div.innerHTML = html;
+        container.appendChild(div);
+    }
+
+    // 2. Nueva función: Verifica si faltan ítems en la etapa actual
+    function verificarEtapaAvanzar(etapaActualId, siguienteTabId, siguienteTabIdx, pestañaActualIdx) {
+        let faltantes = [];
+
+        checklistItems.forEach((item, index) => {
+            const etapaItem = item.etapa.trim().toLowerCase().replace(/\s+/g, '-');
+            
+            if (etapaItem === etapaActualId) {
+                const r = respuestas[item.id];
+                if (!r || r.nota === null || r.nota === undefined) {
+                    faltantes.push(`Ítem ${index + 1}`);
+                }
+            }
+        });
+
+        const pestañaDom = document.querySelectorAll('.tab')[pestañaActualIdx];
+
+        if (faltantes.length > 0) {
+            // Marcar la pestaña actual con color de alerta (rojo)
+            if (pestañaDom) pestañaDom.classList.add('incomplete');
+
+            // Cargar la lista de números en el modal
+            document.getElementById('lista-faltantes-etapa').innerHTML = faltantes.join(', ');
+
+            // Configurar el botón "Avanzar de todos modos"
+            const btnAvanzar = document.getElementById('btn-avanzar-forzado');
+            btnAvanzar.onclick = function() {
+                cerrarModal('modal-advertencia-etapa');
+                cambiarPestana(siguienteTabId, siguienteTabIdx, '');
+            };
+
+            // Abrir el modal de advertencia
+            document.getElementById('modal-advertencia-etapa').style.display = 'flex';
+
+        } else {
+            // Si respondió todo, remover la alerta si la tenía
+            if (pestañaDom) pestañaDom.classList.remove('incomplete');
+            cambiarPestana(siguienteTabId, siguienteTabIdx, '');
+        }
+    }
+
+    function guardarDato(id, valor) {
+        if (!respuestas[id]) respuestas[id] = { nota: null, obs: "" };
+        respuestas[id].nota = valor;
+        localStorage.setItem("tx_aysen_data", JSON.stringify(respuestas));
+
+        document.querySelectorAll(`#likert-${id} button`).forEach(b => b.classList.remove("selected"));
+        document.querySelector(`#likert-${id} button[data-val="${valor}"]`).classList.add("selected");
+        actualizarUI();
+    }
+
+    function guardarObs(id, texto) {
+        if (!respuestas[id]) respuestas[id] = { nota: null, obs: "" };
+        respuestas[id].obs = texto;
+        localStorage.setItem("tx_aysen_data", JSON.stringify(respuestas));
+    }
+
+    function actualizarUI() {
+        const completadas = Object.values(respuestas).filter(r => r.nota !== null).length;
+        document.getElementById('progress-text').innerText = `${completadas} / ${totalItems} Completados`;
+        document.getElementById('progress-bar').style.width = `${(completadas / totalItems) * 100}%`;
+
+        const btn = document.getElementById('btn-generar');
+        if(completadas === totalItems && totalItems > 0) {
+            btn.classList.remove('disabled');
+            btn.style.background = "var(--success)";
+            btn.innerText = "Terminar y Generar Reporte";
+        } else {
+            btn.classList.add('disabled');
+            btn.style.background = "#9ca3af";
+            btn.innerText = `Faltan ${totalItems - completadas} ítems por evaluar`;
+        }
+    }
+
+    function cambiarPestana(tabId, index, tabName) {
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelectorAll('.tab')[index].classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function abrirModalAyuda() { document.getElementById('modal-ayuda').style.display = 'flex'; }
+    function cerrarModal(id) { document.getElementById(id).style.display = 'none'; }
+    window.addEventListener("click", (e) => { if (e.target.classList.contains("modal")) e.target.style.display = "none"; });
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape") document.querySelectorAll(".modal").forEach(m => m.style.display = "none"); });
+
+    function validarYGenerar() {
+        const completadas = Object.values(respuestas).filter(r => r.nota !== null).length;
+        if(completadas < totalItems) {
+            mostrarError(`Ha evaluado ${completadas} de ${totalItems} ítems. Debe completar todos (use N/A si no aplican).`);
+            return;
+        }
+        generarReporteFinal();
+    }
+
+    function calcularNotaFinal() {
+        let sumaNotas = 0;
+        let conteoValidos = 0;
+
+        // 1. Sumar ítems válidos y contar cuántos son (Excluyendo N/A)
+        checklistItems.forEach((item) => {
+            const r = respuestas[item.id];
+            if (r && r.nota !== null && r.nota !== undefined && r.nota !== "N/A") {
+                sumaNotas += Number(r.nota);
+                conteoValidos++;
+            }
+        });
+
+        // Si no contestó nada válido (Puros N/A)
+        if (conteoValidos === 0) return "N/A";
+
+        // 2. Promedio Base simple (Escala 1 a 5)
+        let promedioBase = sumaNotas / conteoValidos;
+
+        // 3. Conversión Lineal Real a Escala 1,0 a 10,0
+        let calificacionGlobal = (2.25 * promedioBase) - 1.25;
+
+        return Number(calificacionGlobal.toFixed(2));
+    }
+
+    function generarReporteFinal() {
+        const notaFinal = calcularNotaFinal();
+        let tituloDiag = "Sin datos";
+        let evalTexto = "Sin datos suficientes para generar un diagnóstico.";
+        let recomTexto = "No se aplicó ninguna recomendación.";
+        let colorScore = "#6b7280"; // Gris neutro por defecto
+
+        // Umbrales Cualitativos y Diagnóstico (Escala 1,0 a 10,0)
+        if (notaFinal >= 1.0 && notaFinal <= 2.8) {
+            tituloDiag = "Muy mala experiencia";
+            evalTexto = "El servicio presenta deficiencias severas y transversales en las dimensiones evaluadas.";
+            recomTexto = "Se requiere un rediseño inmediato de la oferta.";
+            colorScore = "#dc2626"; // Rojo formal
+        } else if (notaFinal > 2.8 && notaFinal <= 4.6) {
+            tituloDiag = "Mala experiencia";
+            evalTexto = "La experiencia brindada presenta aspectos negativos que afectan la percepción del turista.";
+            recomTexto = "Se requieren acciones correctivas y significativas a corto plazo.";
+            colorScore = "#ea580c"; // Naranja formal
+        } else if (notaFinal > 4.6 && notaFinal <= 6.4) {
+            tituloDiag = "Experiencia regular";
+            evalTexto = "El servicio cumple con los aspectos logísticos y funcionales básicos de forma neutra.";
+            recomTexto = "Los ítems con baja calificación son áreas de oportunidad donde se deben aplicar mejoras focalizadas para elevar el estándar.";
+            colorScore = "#d97706"; // Ámbar/Ocre
+        } else if (notaFinal > 6.4 && notaFinal <= 8.2) {
+            tituloDiag = "Buena experiencia";
+            evalTexto = "El servicio satisface las expectativas del turista de manera consistente en la mayoría de las dimensiones evaluadas.";
+            recomTexto = "En base a ítems con baja calificación, implementar ajustes específicos dentro de un plan de mejora continua.";
+            colorScore = "#2563eb"; // Azul corporativo
+        } else if (notaFinal > 8.2 && notaFinal <= 10.0) {
+            tituloDiag = "Excelente experiencia";
+            evalTexto = "La oferta cumple o supera las expectativas del visitante.";
+            recomTexto = "Consolidar y mantener los estándares actuales, buscar oportunidades de mejoras en ítems con calificación baja.";
+            colorScore = "#16a34a"; // Verde institucional
+        }
+
+
+        document.querySelectorAll('.content').forEach(c => c.style.display = 'none');
+        document.getElementById('header-container').style.display = 'none';
+        document.getElementById('btn-submit-wrapper').style.display = 'none';
+        
+        document.getElementById('resultados').style.display = 'block';
+        document.getElementById('final-score').innerText = notaFinal;
+        document.getElementById('final-score').style.color = colorScore;
+        
+        // Despliegue con jerarquía visual profesional (Badge + Texto Neutro + Borde de Acento)
+        document.getElementById('final-label').innerHTML = `
+            <div style="margin-top: 15px; text-align: center;">
+                <span style="background-color: ${colorScore}; color: #ffffff; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block;">
+                    ${tituloDiag}
+                </span>
+            </div>
+            <p style="font-size: 0.95rem; color: #334155; margin-top: 15px; margin-bottom: 15px; text-align: justify; line-height: 1.5; font-weight: normal;">
+                ${evalTexto}
+            </p>
+            <div style="font-size: 0.9rem; padding: 12px 15px; background: #f8fafc; border-left: 4px solid ${colorScore}; border-radius: 4px; text-align: left; color: #334155; font-weight: normal; line-height: 1.4;">
+                <strong style="color: #0f172a;">Recomendación:</strong> ${recomTexto}
+            </div>
+        `;
+        window.scrollTo(0,0);
+    }
+
+    function mostrarEncuesta() {
+        document.getElementById('resultados').style.display = 'none';
+        document.getElementById('pantalla-encuesta').style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
+    async function finalizarYDescargar() {
+        const q1 = document.querySelector('input[name="enc_q1"]:checked');
+        const q2 = document.querySelector('input[name="enc_q2"]:checked');
+        const q3 = document.querySelector('input[name="enc_q3"]:checked');
+        const q4 = document.querySelector('input[name="enc_q4"]:checked');
+
+        if (!q1 || !q2 || !q3 || !q4) {
+            mostrarError("Por favor, responda las preguntas 1 a 4 de la encuesta.");
+            return;
+        }
+
+        const q5 = document.getElementById("enc_q5").value;
+        const notaFinal = calcularNotaFinal();
+        
+        const items = checklistItems.map((item, indice) => ({
+            numero: indice + 1,
+            etapa: item.etapa,
+            dimension: item.dimension,
+            item: item.texto,
+            nota: respuestas[item.id]?.nota ?? "",
+            obs: respuestas[item.id]?.obs ?? ""
+        }));
+
+        // Transformar el rubro a texto plano
+        let textoRubro = (metadatos.rubro || []).join(", ");
+        if (textoRubro.includes("Otro") && metadatos.rubroOtro) {
+            textoRubro = textoRubro.replace("Otro", "Otro (" + metadatos.rubroOtro + ")");
+        }
+
+        const datos = {
+            servicio: metadatos.servicio,
+            rubro: textoRubro,
+            fecha: metadatos.fecha,
+            evaluador: metadatos.evaluador,
+            rol: metadatos.rol,
+            experiencia: metadatos.experiencia,
+            notaFinal: notaFinal,
+            items: items,
+            encuesta: { q1: q1.value, q2: q2.value, q3: q3.value, q4: q4.value, q5: q5 }
+        };
+
+        const btnEnvio = document.getElementById("btn-enviar-final");
+        btnEnvio.innerText = "Enviando datos, por favor espere...";
+        btnEnvio.disabled = true;
+
+        // 1. EMPAQUETADO Y ENVÍO EN SEGUNDO PLANO (Sin detener la pantalla)
+        const formData = new URLSearchParams();
+        formData.append("data", JSON.stringify(datos));
+
+        fetch(URL_SCRIPT, {
+            method: "POST",
+            body: formData
+        }).catch(e => console.error("Error Fetch en segundo plano:", e));
+
+        // 2. ACCIÓN INMEDIATA PARA EL USUARIO
+        // Limpiamos memoria
+        localStorage.removeItem("tx_aysen_data");
+        localStorage.removeItem("tx_aysen_meta");
+
+        // Disparamos el PDF al instante
+        crearPDF(datos);
+
+        // Mostramos el mensaje de "¡Muchas gracias!" sin demoras
+        document.getElementById('pantalla-encuesta').style.display = 'none';
+        document.getElementById('pantalla-despedida').style.display = 'block';
+        window.scrollTo(0,0);
+        
+        btnEnvio.innerText = "Finalizar y Descargar PDF";
+        btnEnvio.disabled = false;
+    }
+
+    function crearPDF(datos) {
+        const elementoHijo = document.createElement('div');
+        elementoHijo.style.padding = '20px';
+        elementoHijo.style.fontFamily = 'Helvetica, sans-serif';
+        
+        let htmlTabla = `
+            <div style="text-align:center; margin-bottom: 20px;">
+                <h2 style="color:#2b4c7e; margin-bottom: 5px;">Checklist para Evaluación de la Experiencia del Turista - Región de Aysén</h2>
+                <h3 style="color:#4b5563; margin-top:0;">Reporte de Evaluación</h3>
+            </div>
+            <div style="background:#f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <p><strong>Servicio:</strong> ${datos.servicio}</p>
+                <p><strong>Evaluador:</strong> ${datos.evaluador}</p>
+                <p><strong>Fecha:</strong> ${datos.fecha}</p>
+                <h2 style="color:#10b981; margin-bottom: 0;">Nota Global Ponderada: ${datos.notaFinal}</h2>
+            </div>
+            <table class="pdf-table" style="width:100%; border-collapse: collapse; font-size: 11px;">
+                <tr style="background-color: #2b4c7e; color: white;">
+                    <th style="padding:6px; border:1px solid #ddd; width: 5%;">Nº</th>
+                    <th style="padding:6px; border:1px solid #ddd; width: 12%;">Etapa</th>
+                    <th style="padding:6px; border:1px solid #ddd; width: 18%;">Dimensión</th>
+                    <th style="padding:6px; border:1px solid #ddd; width: 30%;">Ítem</th>
+                    <th style="padding:6px; border:1px solid #ddd; width: 5%;">Nota</th>
+                    <th style="padding:6px; border:1px solid #ddd; width: 30%;">Observaciones</th>
+                </tr>
+        `;
+
+        datos.items.forEach(i => {
+            htmlTabla += `
+                <tr style="page-break-inside: avoid;">
+                    <td style="padding:6px; border:1px solid #ddd; text-align:center;">${i.numero}</td>
+                    <td style="padding:6px; border:1px solid #ddd; font-weight:bold; color:#4b5563;">${i.etapa}</td>
+                    <td style="padding:6px; border:1px solid #ddd;">${i.dimension}</td>
+                    <td style="padding:6px; border:1px solid #ddd;">${i.item}</td>
+                    <td style="padding:6px; border:1px solid #ddd; text-align:center; font-weight:bold;">${i.nota}</td>
+                    <td style="padding:6px; border:1px solid #ddd;">${i.obs}</td>
+                </tr>
+            `;
+        });
+
+        htmlTabla += `</table>`;
+        elementoHijo.innerHTML = htmlTabla;
+
+        const opciones = {
+            margin:       10,
+            filename:     `Reporte_TX_${datos.servicio.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }, 
+            pagebreak:    { mode: 'css', avoid: 'tr' } 
+        };
+
+        html2pdf().set(opciones).from(elementoHijo).save();
+    }
+</script>
+</body>
+</html>
