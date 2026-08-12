@@ -202,6 +202,14 @@
             Entiendo que puedo pedir información sobre los resultados de este estudio cuando haya concluido. Para esto, puedo contactar al Investigador Responsable del proyecto al correo electrónico cristian.rusu@pucv.cl, o al teléfono (+56) 9 88244506.
         </div>
 
+        <div style="text-align: center; margin-bottom: 15px;">
+            <a href="https://raw.githubusercontent.com/jalejandrosoto/Checklist_TX_Aysen/main/prueba_piloto/Consentimiento_informado.pdf" 
+               target="_blank" rel="noopener" 
+               style="font-size: 0.85rem; color: var(--secondary); text-decoration: underline; font-weight: 600;">
+                📄 Descargar el documento de Consentimiento Informado completo
+            </a>
+        </div>
+
         <label style="display: block; margin-bottom: 25px; font-weight: bold; cursor: pointer; text-align: left; padding: 10px; background: #e0f2fe; border-radius: 6px; border: 1px solid #bae6fd;">
             <input type="checkbox" id="consentimiento" style="transform: scale(1.2); margin-right: 10px;"> ¿Acepta participar? He leído la declaración y acepto participar.
         </label>
@@ -394,10 +402,11 @@
         <div style="background: white; padding: 40px 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); margin: 30px auto; max-width: 650px;">
             <h1 style="font-size: 3rem; margin: 0 0 15px 0;">🎉</h1>
             <h2 style="color: var(--primary); font-size: 1.8rem; margin-top: 0;">¡Muchas gracias!</h2>
-            <p style="color: #4b5563; font-size: 1.1rem; line-height: 1.5; margin-bottom: 30px;">
-                Su evaluación fue registrada correctamente y el reporte en PDF se ha descargado.<br>
-                Gracias por colaborar en la validación de este instrumento.
+            <p style="color: #4b5563; font-size: 1.1rem; line-height: 1.5; margin-bottom: 20px;">
+                Su evaluación fue registrada correctamente.<br>
+                Si lo desea, puede descargar un reporte en PDF con un resumen de sus respuestas.
             </p>
+            <button class="btn-main" style="width: 100%; margin-bottom: 12px;" onclick="descargarReportePDF()">📥 Descargar mi reporte (PDF)</button>
             <button class="btn-nav" style="width: 100%;" onclick="location.reload()">Realizar otra evaluación</button>
         </div>
     </div>
@@ -928,16 +937,22 @@
         localStorage.removeItem("tx_aysen_data");
         localStorage.removeItem("tx_aysen_meta");
 
-        // Disparamos el PDF al instante
-        crearPDF(datos);
+        // Guardamos los datos para descarga OPCIONAL posterior (ya no se descarga automático)
+        window.datosFinalesPDF = datos;
 
-        // Mostramos el mensaje de "¡Muchas gracias!" sin demoras
+        // Mostramos el mensaje de "¡Muchas gracias!" sin descargar nada todavía
         document.getElementById('pantalla-encuesta').style.display = 'none';
         document.getElementById('pantalla-despedida').style.display = 'block';
         window.scrollTo(0,0);
         
         btnEnvio.innerText = "Finalizar y Descargar PDF";
         btnEnvio.disabled = false;
+    }
+
+    function descargarReportePDF() {
+        if (window.datosFinalesPDF) {
+            crearPDF(window.datosFinalesPDF);
+        }
     }
 
     function crearPDF(datos) {
@@ -950,6 +965,9 @@
             <div style="text-align:center; margin-bottom: 20px;">
                 <h2 style="color:#2b4c7e; margin-bottom: 5px;">Checklist para Evaluación de la Experiencia del Turista - Región de Aysén</h2>
                 <h3 style="color:#4b5563; margin-top:0;">Reporte de Evaluación</h3>
+            </div>
+            <div style="background:#fff7ed; border:1px solid #fdba74; padding:10px 14px; border-radius:6px; margin-bottom:15px; font-size:0.78rem; color:#7c2d12; text-align:justify; line-height:1.35;">
+                <strong>Nota importante:</strong> Este informe corresponde a una evaluación preliminar generada en el marco de la <strong>prueba piloto</strong> del instrumento "Checklist para la Evaluación de la Experiencia del Turista - Región de Aysén". El objetivo de esta etapa no es calificar ni evaluar formalmente al servicio turístico, sino recoger información que permita validar y mejorar el instrumento. Los resultados presentados son de carácter informativo general y no constituyen una certificación oficial del servicio.
             </div>
             <div style="background:#f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-family: sans-serif;">
                 <p style="margin: 3px 0;"><strong>Servicio:</strong> ${datos.servicio}</p>
