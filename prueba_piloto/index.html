@@ -340,7 +340,7 @@
         </div>
         <p style="color:#4b5563;font-size:1rem;line-height:1.6;margin-bottom:25px;">
             Antes de finalizar, responda una breve encuesta sobre este instrumento.<br><br>
-            <strong>Al enviarla, se descargará automáticamente el PDF de su evaluación.</strong>
+            <strong>Al enviarla, se habilitará el botón para descargar un PDF con el resumen de su evaluación.</strong>
         </p>
         <button class="btn-main" style="width: 100%;" onclick="mostrarEncuesta()">Ir a la Encuesta →</button>
     </div>
@@ -390,11 +390,16 @@
             </div>
         </div>
         <div class="encuesta-pregunta">
-            <p>5. Sugerencias: ¿Qué cambios o mejoras le haría al instrumento para la versión final?</p>
+            <p>5. Sugerencias: ¿Qué cambios o mejoras haría al instrumento para su versión final? Considere también si hay algún aspecto de la experiencia del turista en la Región de Aysén que el checklist no esté evaluando.</p>
             <textarea id="enc_q5" placeholder="Escriba aquí sus sugerencias..."></textarea>
         </div>
+
+        <div class="encuesta-pregunta">
+            <p>6. Sobre el uso de esta plataforma web (no el checklist en sí): ¿funcionó bien o se podría mejorar algo? (diseño, lentitud, uso en el celular, etc.)</p>
+            <textarea id="enc_q6" placeholder="Escriba aquí su comentario sobre el uso de la plataforma..."></textarea>
+        </div>
         
-        <button id="btn-enviar-final" class="btn-main" style="width: 100%; background: var(--success);" onclick="finalizarYDescargar()">Finalizar y Descargar PDF</button>
+        <button id="btn-enviar-final" class="btn-main" style="width: 100%; background: var(--success);" onclick="finalizarYDescargar()">Enviar Respuestas</button>
     </div>
 
     <!-- Despedida -->
@@ -890,6 +895,7 @@
         }
 
         const q5 = document.getElementById("enc_q5").value;
+        const q6 = document.getElementById("enc_q6").value;
         const notaFinal = calcularNotaFinal();
         
         const items = checklistItems.map((item, indice) => ({
@@ -916,7 +922,7 @@
             experiencia: metadatos.experiencia,
             notaFinal: notaFinal,
             items: items,
-            encuesta: { q1: q1.value, q2: q2.value, q3: q3.value, q4: q4.value, q5: q5 }
+            encuesta: { q1: q1.value, q2: q2.value, q3: q3.value, q4: q4.value, q5: q5, q6: q6 }
         };
 
         const btnEnvio = document.getElementById("btn-enviar-final");
@@ -945,7 +951,7 @@
         document.getElementById('pantalla-despedida').style.display = 'block';
         window.scrollTo(0,0);
         
-        btnEnvio.innerText = "Finalizar y Descargar PDF";
+        btnEnvio.innerText = "Enviar Respuestas";
         btnEnvio.disabled = false;
     }
 
