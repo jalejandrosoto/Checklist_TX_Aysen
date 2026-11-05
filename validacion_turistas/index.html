@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Validación de Cobertura: Experiencia del Turista en Aysén</title>
+    <title>Validación de Turistas - Experiencia del Turista en Aysén</title>
     
     <!-- Tailwind CSS por CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,8 +12,13 @@
             theme: {
                 extend: {
                     colors: {
-                        institucional: '#1E3A8A',
-                        fondo: '#F8FAFC'
+                        tema: {
+                            primario: '#2b4c7e',   /* Azul marino institucional suave */
+                            secundario: '#4a90e2', /* Azul medio */
+                            fondo: '#f8fafc',      /* Gris suave */
+                            borde: '#e2e8f0',
+                            texto: '#374151'
+                        }
                     }
                 }
             }
@@ -21,535 +26,815 @@
     </script>
 
     <style>
-        .oculto { display: none !important; }
-        .likert-btn { transition: all 0.2s ease; }
-        .likert-btn.selected { 
-            background-color: #1E3A8A !important; 
-            color: #FFFFFF !important; 
-            border-color: #1E3A8A !important;
-            transform: scale(1.03);
-            box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.3);
+        body {
+            background-color: #f8fafc;
+            color: #374151;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .oculto { display: none !important; }
+
+        /* Estilos suaves para botones Likert */
+        .btn-likert {
+            transition: all 0.15s ease-in-out;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #475569;
+        }
+        .btn-likert:hover {
+            background-color: #f1f5f9;
+        }
+        .btn-likert.selected {
+            background-color: #2b4c7e !important;
+            border-color: #2b4c7e !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 4px rgba(43, 76, 126, 0.25);
+        }
+
+        /* Pestañas de Etapas en cabecera */
+        .tab-etapa {
+            border-bottom: 3px solid transparent;
+            color: #64748b;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .tab-etapa.activa {
+            color: #2b4c7e;
+            border-bottom-color: #2b4c7e;
+            background-color: #ffffff;
+            font-weight: 700;
+        }
+
+        /* Tags de Dimensiones TX suaves tipo pastel */
+        .tag-tx {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-width: 1px;
+        }
+        .dim-cognitiva { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+        .dim-pragmatica { background: #dcfce7; color: #15803d; border-color: #bbf7d0; }
+        .dim-sensorial { background: #fef9c3; color: #a16207; border-color: #fef08a; }
+        .dim-relacional { background: #fce7f3; color: #be185d; border-color: #fbcfe8; }
+        .dim-emocional { background: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
+        .dim-sostenibilidad { background: #ecfccb; color: #4d7c0f; border-color: #d9f99d; }
+        .dim-culturalocal { background: #ffedd5; color: #c2410c; border-color: #fed7aa; }
+        .dim-conductual { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+        .dim-novedad { background: #fee2e2; color: #b91c1c; border-color: #fecaca; }
+        .dim-default { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+
+        /* Categoría tematica */
+        .badge-categoria {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
         }
     </style>
 </head>
-<body class="bg-fondo text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Header Institucional -->
-    <header class="bg-institucional text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+    <!-- CABECERA INSTITUCIONAL LIMPIA (Sin botones confusos) -->
+    <header class="bg-[#2b4c7e] text-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <div>
-                <h1 class="font-bold text-sm md:text-base leading-tight">Validación de Cobertura</h1>
+                <h1 class="font-bold text-sm md:text-base leading-tight tracking-wide">Validación de Turistas</h1>
                 <p class="text-xs text-blue-200">Magíster en Ingeniería Informática - PUCV</p>
             </div>
-            <div class="text-right text-xs bg-blue-900/60 px-3 py-1 rounded border border-blue-400/30">
-                Aysén TX
-            </div>
+            <!-- Botón Volver universal visible si no estamos en la portada -->
+            <button id="btn-volver-header" onclick="retrocederPantallaGeneral()" class="text-xs bg-white/10 hover:bg-white/20 text-white font-semibold px-3 py-1.5 rounded-lg border border-white/20 flex items-center gap-1 transition oculto">
+                ← Volver
+            </button>
         </div>
     </header>
 
-    <main class="flex-grow w-full max-w-3xl mx-auto p-4 md:p-6" id="app-container">
+    <!-- CONTENEDOR PRINCIPAL: FLUJO NATURAL SIN DOBLE SCROLL -->
+    <main class="flex-grow w-full max-w-2xl mx-auto px-4 py-5" id="app">
 
-        <!-- ==========================================
-             PANTALLA 1: CONSENTIMIENTO INFORMADO
-             ========================================== -->
-        <section id="pantalla-1" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mt-2 fade-in">
-            <div class="border-b border-slate-100 pb-4 mb-6">
-                <span class="text-xs font-bold text-institucional uppercase tracking-widest bg-blue-50 px-2.5 py-1 rounded">Investigación Académica</span>
-                <h2 class="text-2xl md:text-3xl font-extrabold text-institucional mt-3">Validación de Cobertura: Experiencia del Turista en Aysén</h2>
-                <h3 class="text-slate-500 font-medium text-sm md:text-base mt-1">Tesis Magíster en Ingeniería Informática PUCV</h3>
-            </div>
-            
-            <p class="text-slate-600 mb-6 leading-relaxed text-justify text-sm md:text-base">
-                Te invitamos a participar en la validación de un instrumento diseñado para evaluar y mejorar los servicios turísticos en la Región de Aysén. El objetivo de esta consulta es comprobar si nuestros criterios abarcan la totalidad de las situaciones e imponderables que enfrentan los visitantes.
-            </p>
+        <!-- ========================================================
+             PANTALLA 1: CONSENTIMIENTO INFORMADO E INTRODUCCIÓN
+             ======================================================== -->
+        <section id="pantalla-1" class="bg-white rounded-xl shadow-sm border border-tema-borde p-5 md:p-7">
+            <h2 class="text-xl md:text-2xl font-bold text-[#2b4c7e] mb-1">
+                Validación de Turistas: Experiencia del Turista en Aysén
+            </h2>
+            <h3 class="text-sm font-semibold text-slate-500 mb-5 pb-3 border-b border-slate-100">
+                Investigación Académica - Magíster en Ingeniería Informática PUCV
+            </h3>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-                <label class="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" id="chk-consentimiento" class="mt-1 w-5 h-5 text-institucional rounded focus:ring-institucional cursor-pointer">
-                    <span class="text-sm font-semibold text-slate-800 leading-snug">
-                        He leído y acepto voluntariamente participar.
-                    </span>
-                </label>
+            <!-- Cuadro de texto auténtico del consentimiento -->
+            <div class="text-xs md:text-sm text-slate-600 bg-slate-50 p-4 rounded-lg border border-slate-200 text-justify leading-relaxed mb-4">
+                <p class="font-bold text-slate-800 mb-2">Declaración de Consentimiento Informado</p>
+                Te invitamos a participar en la validación de un instrumento diseñado para evaluar y mejorar los servicios turísticos en la Región de Aysén. El objetivo de esta consulta es comprobar si nuestros criterios abarcan la totalidad de las situaciones e imponderables que enfrentan los visitantes.<br><br>
+                Su participación es voluntaria, anónima y no conlleva riesgos. Toda la información será tratada bajo estricta confidencialidad con fines exclusivamente científicos y académicos.
             </div>
 
-            <button onclick="procesarPantalla1()" class="w-full bg-institucional hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-lg shadow-md transition text-base">
+            <!-- Enlace al PDF oficial -->
+            <div class="text-center mb-6">
+                <a href="Consentimiento_informado.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs md:text-sm font-semibold text-[#4a90e2] hover:text-[#2b4c7e] underline">
+                    📄 Descargar el documento de Consentimiento Informado completo (PDF)
+                </a>
+            </div>
+
+            <!-- Checkbox obligatorio -->
+            <label class="flex items-start gap-3 p-3.5 bg-blue-50/60 border border-blue-200 rounded-lg cursor-pointer mb-6 hover:bg-blue-50 transition">
+                <input type="checkbox" id="chk-consentimiento" class="mt-0.5 w-5 h-5 text-[#2b4c7e] rounded focus:ring-0 cursor-pointer">
+                <span class="text-xs md:text-sm font-medium text-slate-800 leading-snug">
+                    He leído y acepto voluntariamente participar.
+                </span>
+            </label>
+
+            <button onclick="validarPaso1()" class="w-full bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-base">
                 Comenzar
             </button>
-            <p id="err-pantalla-1" class="text-red-600 text-sm font-medium mt-3 text-center oculto">
-                ⚠️ Debe aceptar voluntariamente participar para continuar.
+            <p id="err-pantalla-1" class="text-red-600 text-xs font-semibold text-center mt-2 oculto">
+                ⚠️ Debe aceptar el consentimiento para participar.
             </p>
         </section>
 
-        <!-- ==========================================
-             PANTALLA 2: FILTRO INICIAL
-             ========================================== -->
-        <section id="pantalla-2" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mt-2 oculto fade-in">
-            <h2 class="text-xl md:text-2xl font-bold text-institucional mb-3">Filtro de Participación</h2>
-            <p class="text-slate-600 text-sm mb-6">Por favor responde la siguiente pregunta de clasificación:</p>
-            
-            <div class="bg-slate-50 border border-slate-200 p-4 rounded-lg mb-6">
-                <p class="text-slate-900 font-semibold mb-4 text-base">¿Has visitado la Región de Aysén como turista? <span class="text-red-500">*</span></p>
-                
-                <div class="flex flex-col gap-3">
-                    <label class="flex items-center gap-3 p-3.5 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-institucional transition">
-                        <input type="radio" name="filtro-turista" value="si_12m" class="w-4 h-4 text-institucional focus:ring-institucional">
-                        <span class="text-slate-700 text-sm font-medium">Sí, en los últimos 12 meses</span>
+
+        <!-- ========================================================
+             PANTALLA 2: FILTRO INICIAL DE PARTICIPACIÓN
+             ======================================================== -->
+        <section id="pantalla-2" class="bg-white rounded-xl shadow-sm border border-tema-borde p-5 md:p-7 oculto">
+            <h2 class="text-lg md:text-xl font-bold text-[#2b4c7e] mb-2">Filtro de Participación</h2>
+            <p class="text-sm text-slate-600 mb-5">Por favor responda la siguiente pregunta obligatoria:</p>
+
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-6">
+                <p class="text-sm md:text-base font-semibold text-slate-800 mb-4">
+                    ¿Has visitado la Región de Aysén como turista? <span class="text-red-500">*</span>
+                </p>
+
+                <div class="space-y-2.5">
+                    <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-[#4a90e2] transition">
+                        <input type="radio" name="filtro_visita" value="Sí, en los últimos 12 meses" class="w-4 h-4 text-[#2b4c7e]">
+                        <span class="text-sm font-medium text-slate-700">Sí, en los últimos 12 meses</span>
                     </label>
-                    <label class="flex items-center gap-3 p-3.5 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-institucional transition">
-                        <input type="radio" name="filtro-turista" value="si_mas_1_ano" class="w-4 h-4 text-institucional focus:ring-institucional">
-                        <span class="text-slate-700 text-sm font-medium">Sí, hace más de 1 año</span>
+                    <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-[#4a90e2] transition">
+                        <input type="radio" name="filtro_visita" value="Sí, hace más de 1 año" class="w-4 h-4 text-[#2b4c7e]">
+                        <span class="text-sm font-medium text-slate-700">Sí, hace más de 1 año</span>
                     </label>
-                    <label class="flex items-center gap-3 p-3.5 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-institucional transition">
-                        <input type="radio" name="filtro-turista" value="no" class="w-4 h-4 text-institucional focus:ring-institucional">
-                        <span class="text-slate-700 text-sm font-medium">No</span>
+                    <label class="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-[#4a90e2] transition">
+                        <input type="radio" name="filtro_visita" value="No" class="w-4 h-4 text-[#2b4c7e]">
+                        <span class="text-sm font-medium text-slate-700">No</span>
                     </label>
                 </div>
             </div>
 
-            <div class="flex justify-between items-center">
-                <button onclick="irAPantalla(1)" class="text-slate-500 hover:text-slate-800 text-sm font-semibold">← Volver</button>
-                <button onclick="procesarFiltro()" class="bg-institucional hover:bg-blue-900 text-white font-bold py-3 px-8 rounded-lg shadow transition text-sm md:text-base">
-                    Continuar
+            <!-- Botones Volver y Continuar -->
+            <div class="flex gap-3">
+                <button onclick="cambiarPantalla(1)" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-3 rounded-lg text-sm transition">
+                    ← Volver
+                </button>
+                <button onclick="procesarFiltro()" class="w-2/3 bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-sm">
+                    Continuar →
                 </button>
             </div>
-            <p id="err-pantalla-2" class="text-red-600 text-sm font-medium mt-3 text-right oculto">Seleccione una opción para continuar.</p>
+            <p id="err-pantalla-2" class="text-red-600 text-xs font-semibold text-center mt-2 oculto">
+                ⚠️ Debe seleccionar una opción para continuar.
+            </p>
         </section>
 
-        <!-- PANTALLA 2.1: DESCARTE AMIGABLE -->
-        <section id="pantalla-descarte" class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center mt-2 oculto fade-in">
-            <div class="w-16 h-16 bg-blue-100 text-institucional rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
-                ℹ️
-            </div>
-            <h2 class="text-2xl font-bold text-institucional mb-3">Muchas gracias por tu interés</h2>
-            <p class="text-slate-600 text-sm md:text-base leading-relaxed max-w-lg mx-auto mb-6">
+
+        <!-- PANTALLA 2.1: DESCARTE AMIGABLE SI SELECCIONA "NO" -->
+        <section id="pantalla-descarte" class="bg-white rounded-xl shadow-sm border border-tema-borde p-6 md:p-8 text-center oculto">
+            <div class="text-4xl mb-3">👋</div>
+            <h2 class="text-xl font-bold text-[#2b4c7e] mb-3">Muchas gracias por tu interés</h2>
+            <p class="text-sm md:text-base text-slate-600 leading-relaxed max-w-md mx-auto mb-6 text-justify md:text-center">
                 Esta investigación está dirigida exclusivamente a personas que hayan visitado la Región de Aysén como turistas, ya que se requiere la vivencia real en el territorio para evaluar la cobertura del instrumento.
             </p>
-            <p class="text-xs text-slate-400">Pontificia Universidad Católica de Valparaíso</p>
+            <button onclick="cambiarPantalla(2)" class="text-sm text-[#4a90e2] hover:underline font-semibold">
+                ← Volver a responder la pregunta
+            </button>
         </section>
 
-        <!-- ==========================================
-             PANTALLA 3: MAPA DEL VIAJE HOLÍSTICO
-             ========================================== -->
-        <section id="pantalla-3" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mt-2 oculto fade-in">
-            <h2 class="text-2xl md:text-3xl font-extrabold text-institucional mb-2">Una visión holística de tu viaje</h2>
-            <p class="text-slate-600 text-sm md:text-base mb-6 leading-relaxed">
+
+        <!-- ========================================================
+             PANTALLA 3: EL VIAJE HOLÍSTICO (CUSTOMER JOURNEY MAP)
+             ======================================================== -->
+        <section id="pantalla-3" class="bg-white rounded-xl shadow-sm border border-tema-borde p-5 md:p-7 oculto">
+            <h2 class="text-xl md:text-2xl font-bold text-[#2b4c7e] mb-2">Una visión holística de tu viaje</h2>
+            <p class="text-xs md:text-sm text-slate-600 mb-5 leading-relaxed text-justify">
                 Para evaluar la experiencia de forma integral, dividimos el viaje en 3 etapas cronológicas. Queremos comprobar si nuestros criterios cubren todo lo que viviste desde la planificación en tu hogar hasta el regreso.
             </p>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl flex flex-col justify-between">
+            <!-- 3 Tarjetas con Iconos Representativos -->
+            <div class="space-y-3 mb-6">
+                <!-- Etapa 1 -->
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-start gap-3.5">
+                    <div class="text-2xl p-2 bg-white rounded-lg border border-slate-200 shadow-2xs flex-shrink-0">🧳</div>
                     <div>
-                        <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Etapa 1</span>
-                        <h3 class="font-bold text-slate-800 text-base mt-2 mb-2">Pre-viaje</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold uppercase bg-blue-100 text-[#2b4c7e] px-2 py-0.5 rounded">Etapa 1</span>
+                            <h3 class="font-bold text-sm text-slate-800">Pre-viaje</h3>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
                             Búsqueda de información, reservas, pautas climáticas, transporte y planificación inicial.
                         </p>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl flex flex-col justify-between">
+                <!-- Etapa 2 -->
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-start gap-3.5">
+                    <div class="text-2xl p-2 bg-white rounded-lg border border-slate-200 shadow-2xs flex-shrink-0">🏔️</div>
                     <div>
-                        <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Etapa 2</span>
-                        <h3 class="font-bold text-slate-800 text-base mt-2 mb-2">Durante el viaje</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold uppercase bg-blue-100 text-[#2b4c7e] px-2 py-0.5 rounded">Etapa 2</span>
+                            <h3 class="font-bold text-sm text-slate-800">Durante el viaje</h3>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
                             Llegada, conectividad/señal, rutas/combustible, hospitalidad, infraestructura y cultura local.
                         </p>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl flex flex-col justify-between">
+                <!-- Etapa 3 -->
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-start gap-3.5">
+                    <div class="text-2xl p-2 bg-white rounded-lg border border-slate-200 shadow-2xs flex-shrink-0">🏡</div>
                     <div>
-                        <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">Etapa 3</span>
-                        <h3 class="font-bold text-slate-800 text-base mt-2 mb-2">Post-viaje</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-extrabold uppercase bg-blue-100 text-[#2b4c7e] px-2 py-0.5 rounded">Etapa 3</span>
+                            <h3 class="font-bold text-sm text-slate-800">Post-viaje</h3>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-1">
                             Cierre de la experiencia, recuerdos, canales de comentarios/reclamos y recomendación del destino.
                         </p>
                     </div>
                 </div>
             </div>
 
-            <button onclick="iniciarEvaluacionEtapas()" class="w-full bg-institucional hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-lg shadow-md transition text-base">
-                Comenzar Validación por Etapas
-            </button>
+            <!-- Botones Volver y Comenzar -->
+            <div class="flex gap-3">
+                <button onclick="cambiarPantalla(2)" class="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-3 rounded-lg text-sm transition">
+                    ← Volver
+                </button>
+                <button onclick="iniciarEtapas()" class="w-2/3 bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-sm">
+                    Comenzar Validación por Etapas →
+                </button>
+            </div>
         </section>
 
-        <!-- ==========================================
-             PANTALLA 4: EVALUACIÓN POR ETAPAS
-             ========================================== -->
-        <section id="pantalla-4" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mt-2 oculto fade-in">
-            
-            <!-- Barra de Progreso y Pestañas -->
-            <div class="mb-6">
-                <div class="flex justify-between items-center text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    <span id="txt-progreso-etapa">Etapa 1 de 3</span>
-                    <span id="txt-porcentaje-progreso">33%</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-2 mb-4 overflow-hidden">
-                    <div id="barra-progreso" class="bg-institucional h-2 rounded-full transition-all duration-300" style="width: 33.3%;"></div>
+
+        <!-- ========================================================
+             PANTALLA 4: EVALUACIÓN POR ETAPAS (Sin doble scroll)
+             ======================================================== -->
+        <section id="pantalla-4" class="oculto">
+
+            <!-- Pestañas Superiores Clickeables y Barra de Progreso (Sticky) -->
+            <div class="bg-white rounded-xl shadow-xs border border-tema-borde overflow-hidden mb-4 sticky top-14 z-30">
+                <!-- Barra de avance visual -->
+                <div class="w-full bg-slate-100 h-1.5">
+                    <div id="barra-progreso" class="bg-[#2b4c7e] h-1.5 transition-all duration-300" style="width: 33.3%;"></div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-1 border-b border-slate-200 pb-2 text-center text-xs md:text-sm font-semibold" id="tabs-header">
-                    <div id="tab-0" class="py-1.5 text-institucional border-b-2 border-institucional">1. Pre-viaje</div>
-                    <div id="tab-1" class="py-1.5 text-slate-400 border-b-2 border-transparent">2. Durante</div>
-                    <div id="tab-2" class="py-1.5 text-slate-400 border-b-2 border-transparent">3. Post-viaje</div>
+                <!-- Pestañas clickeables con iconos -->
+                <div class="grid grid-cols-3 text-center text-xs border-b border-slate-200 bg-slate-50">
+                    <button onclick="saltarAEtapa(0)" id="tab-0" class="tab-etapa py-2.5 px-1 activa font-bold">
+                        <span class="block text-sm">🧳</span> Pre-viaje
+                    </button>
+                    <button onclick="saltarAEtapa(1)" id="tab-1" class="tab-etapa py-2.5 px-1 font-medium">
+                        <span class="block text-sm">🏔️</span> Durante
+                    </button>
+                    <button onclick="saltarAEtapa(2)" id="tab-2" class="tab-etapa py-2.5 px-1 font-medium">
+                        <span class="block text-sm">🏡</span> Post-viaje
+                    </button>
                 </div>
             </div>
 
-            <!-- Título descriptivo de la etapa -->
-            <div class="mb-4">
-                <h3 id="etapa-titulo" class="text-xl font-extrabold text-institucional">Pre-viaje</h3>
-                <p id="etapa-subtitulo" class="text-xs md:text-sm text-slate-500 mt-0.5">
-                    Revisa los criterios definidos para esta etapa antes de responder la validación al final.
+            <!-- Cabecera de la Etapa Activa -->
+            <div class="bg-white rounded-xl p-4 md:p-5 border border-tema-borde shadow-xs mb-4">
+                <div class="flex items-center gap-2 mb-1">
+                    <span id="badge-etapa-icono" class="text-xl">🧳</span>
+                    <h2 id="titulo-etapa-activa" class="text-lg md:text-xl font-bold text-[#2b4c7e]">Pre-viaje</h2>
+                </div>
+                <p id="subtitulo-etapa-activa" class="text-xs md:text-sm text-slate-500 mb-3">
+                    Revisa los siguientes ítems definidos para esta etapa y luego evalúa la cobertura global al final.
                 </p>
+
+                <!-- Resumen de Temáticas abarcadas para orientación mental -->
+                <div class="pt-2 border-t border-slate-100">
+                    <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wide block mb-1.5">Temáticas en esta etapa:</span>
+                    <div id="contenedor-tematicas-etapa" class="flex flex-wrap gap-1.5">
+                        <!-- Se insertan badges temáticos dinámicamente -->
+                    </div>
+                </div>
             </div>
 
-            <!-- Contenedor con Scroll de las tarjetas de ítems -->
-            <div id="contenedor-items" class="space-y-3 max-h-[380px] overflow-y-auto pr-1 mb-8 border border-slate-100 rounded-lg p-2 bg-slate-50/50">
-                <!-- Se inyecta dinámicamente desde items.js -->
+            <!-- LISTA DE ÍTEMS EN FLUJO NATURAL (Sin scroll interno encajonado) -->
+            <div id="lista-items-flujo" class="space-y-3 mb-6">
+                <!-- Se inyectan las tarjetas desde items.js -->
             </div>
 
-            <!-- BLOQUE DE VALIDACIÓN DE LA ETAPA -->
-            <div class="bg-blue-50/50 border-2 border-blue-200/80 rounded-xl p-5 mb-6">
-                <h4 class="font-bold text-slate-900 text-sm md:text-base mb-4 flex items-center gap-2">
-                    <span class="bg-institucional text-white text-xs px-2 py-0.5 rounded">Evaluación</span>
-                    ¿Qué opinas de la cobertura en <span id="etapa-nombre-pregunta" class="underline">Pre-viaje</span>?
-                </h4>
+            <!-- BLOQUE DE VALIDACIÓN DE COBERTURA DE LA ETAPA -->
+            <div class="bg-white rounded-xl border-2 border-blue-200/80 p-5 md:p-6 shadow-xs mb-6">
+                <h3 class="font-bold text-[#2b4c7e] text-sm md:text-base mb-1">
+                    Evaluación de Cobertura: <span id="nombre-etapa-pregunta">Pre-viaje</span>
+                </h3>
+                <p class="text-xs text-slate-500 mb-5">
+                    Responde estas preguntas considerando la totalidad de los ítems revisados arriba.
+                </p>
 
-                <!-- Pregunta 1: Likert Obligatorio -->
-                <div class="mb-5">
-                    <label class="block text-slate-700 text-xs md:text-sm font-semibold mb-2 leading-relaxed">
-                        En función de tu experiencia real en Aysén, ¿en qué medida sientes que los criterios presentados abarcan la totalidad de las vivencias, necesidades e imponderables de esta etapa? <span class="text-red-500">*</span>
+                <!-- Pregunta 1: Likert 1 a 5 (Obligatorio) -->
+                <div class="mb-5 pb-5 border-b border-slate-100">
+                    <label class="block text-xs md:text-sm font-semibold text-slate-800 mb-2 leading-relaxed">
+                        1. En función de tu experiencia real en Aysén, ¿en qué medida sientes que los criterios presentados abarcan la totalidad de las vivencias, necesidades e imponderables de la etapa de <span id="lbl-nombre-etapa-likert" class="text-[#2b4c7e]">Pre-viaje</span>? <span class="text-red-500">*</span>
                     </label>
-                    <div class="grid grid-cols-5 gap-1.5" id="likert-opciones">
-                        <button type="button" onclick="setLikert(1)" data-valor="1" class="likert-btn p-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-bold hover:bg-slate-100 text-center text-xs md:text-sm">
-                            1
-                            <span class="block text-[9px] font-normal text-slate-500 mt-1 leading-tight">Muy incompleto</span>
+
+                    <!-- Botones Likert Responsivos -->
+                    <div class="grid grid-cols-5 gap-1.5 md:gap-2 mt-3" id="likert-botones">
+                        <button type="button" onclick="marcarLikert(1)" data-val="1" class="btn-likert rounded-lg py-2.5 px-1 text-center">
+                            <span class="block text-sm md:text-base font-bold">1</span>
+                            <span class="block text-[9px] md:text-[10px] leading-tight mt-0.5">Muy incompleto</span>
                         </button>
-                        <button type="button" onclick="setLikert(2)" data-valor="2" class="likert-btn p-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-bold hover:bg-slate-100 text-center text-xs md:text-sm">
-                            2
-                            <span class="block text-[9px] font-normal text-slate-500 mt-1 leading-tight">Poco completo</span>
+                        <button type="button" onclick="marcarLikert(2)" data-val="2" class="btn-likert rounded-lg py-2.5 px-1 text-center">
+                            <span class="block text-sm md:text-base font-bold">2</span>
+                            <span class="block text-[9px] md:text-[10px] leading-tight mt-0.5">Poco completo</span>
                         </button>
-                        <button type="button" onclick="setLikert(3)" data-valor="3" class="likert-btn p-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-bold hover:bg-slate-100 text-center text-xs md:text-sm">
-                            3
-                            <span class="block text-[9px] font-normal text-slate-500 mt-1 leading-tight">Moderado</span>
+                        <button type="button" onclick="marcarLikert(3)" data-val="3" class="btn-likert rounded-lg py-2.5 px-1 text-center">
+                            <span class="block text-sm md:text-base font-bold">3</span>
+                            <span class="block text-[9px] md:text-[10px] leading-tight mt-0.5">Moderado</span>
                         </button>
-                        <button type="button" onclick="setLikert(4)" data-valor="4" class="likert-btn p-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-bold hover:bg-slate-100 text-center text-xs md:text-sm">
-                            4
-                            <span class="block text-[9px] font-normal text-slate-500 mt-1 leading-tight">Muy completo</span>
+                        <button type="button" onclick="marcarLikert(4)" data-val="4" class="btn-likert rounded-lg py-2.5 px-1 text-center">
+                            <span class="block text-sm md:text-base font-bold">4</span>
+                            <span class="block text-[9px] md:text-[10px] leading-tight mt-0.5">Muy completo</span>
                         </button>
-                        <button type="button" onclick="setLikert(5)" data-valor="5" class="likert-btn p-2 border border-slate-300 rounded-lg bg-white text-slate-700 font-bold hover:bg-slate-100 text-center text-xs md:text-sm">
-                            5
-                            <span class="block text-[9px] font-normal text-slate-500 mt-1 leading-tight">Totalmente</span>
+                        <button type="button" onclick="marcarLikert(5)" data-val="5" class="btn-likert rounded-lg py-2.5 px-1 text-center">
+                            <span class="block text-sm md:text-base font-bold">5</span>
+                            <span class="block text-[9px] md:text-[10px] leading-tight mt-0.5">Totalmente</span>
                         </button>
                     </div>
                     <p id="err-likert" class="text-red-600 text-xs font-semibold mt-2 oculto">
-                        ⚠️ Debe seleccionar una calificación de 1 a 5 para esta etapa.
+                        ⚠️ Debe seleccionar una calificación de 1 a 5 para continuar.
                     </p>
                 </div>
 
-                <!-- Pregunta 2: Observación Abierta -->
+                <!-- Pregunta 2: Observación Abierta (Opcional) -->
                 <div>
-                    <label for="input-feedback" class="block text-slate-700 text-xs md:text-sm font-semibold mb-1.5 leading-relaxed">
-                        ¿Viviste alguna situación o problema en esta etapa que sintieras que NO está abarcado en esta lista, o que sugerirías modificar? <span class="text-slate-400 font-normal">(Opcional)</span>
+                    <label for="txt-observacion" class="block text-xs md:text-sm font-semibold text-slate-800 mb-1.5 leading-relaxed">
+                        2. ¿Viviste alguna situación o problema en esta etapa que sintieras que NO está abarcado en esta lista, o que sugerirías modificar? <span class="text-slate-400 font-normal">(Opcional)</span>
                     </label>
-                    <textarea id="input-feedback" rows="3" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs md:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-institucional" placeholder="Detalla aquí cualquier imponderable o aspecto faltante..."></textarea>
+                    <textarea id="txt-observacion" rows="3" oninput="guardarTextoObs(this.value)" class="w-full p-3 bg-white border border-slate-300 rounded-lg text-xs md:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#2b4c7e]" placeholder="Describe aquí detalles, anécdotas, imponderables o sugerencias..."></textarea>
                 </div>
             </div>
 
             <!-- Botones de Navegación de Etapa -->
-            <div class="flex justify-between items-center pt-2 border-t border-slate-100">
-                <button id="btn-etapa-anterior" onclick="retrocederEtapa()" class="text-slate-500 hover:text-slate-800 text-xs md:text-sm font-semibold px-3 py-2 invisible">
-                    ← Etapa Anterior
+            <div class="flex gap-3 mb-8">
+                <button onclick="etapaAnterior()" id="btn-etapa-prev" class="w-1/3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold py-3 px-2 rounded-lg text-xs md:text-sm transition">
+                    ← Volver
                 </button>
-                <button id="btn-etapa-siguiente" onclick="avanzarEtapa()" class="bg-institucional hover:bg-blue-900 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-xs md:text-sm">
+                <button onclick="etapaSiguiente()" id="btn-etapa-next" class="w-2/3 bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-xs md:text-sm">
                     Siguiente Etapa →
                 </button>
             </div>
         </section>
 
-        <!-- ==========================================
+
+        <!-- ========================================================
              PANTALLA 5: FINALIZACIÓN Y AGRADECIMIENTO
-             ========================================== -->
-        <section id="pantalla-5" class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center mt-2 oculto fade-in">
-            <div class="w-16 h-16 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl font-bold">
+             ======================================================== -->
+        <section id="pantalla-5" class="bg-white rounded-xl shadow-sm border border-tema-borde p-6 md:p-8 text-center oculto">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
                 ✓
             </div>
             
-            <h2 class="text-2xl font-extrabold text-institucional mb-2">¡Muchas gracias por tu contribución!</h2>
-            <p class="text-slate-600 text-sm md:text-base leading-relaxed max-w-lg mx-auto mb-6">
-                Tu evaluación ha sido registrada exitosamente. Tus aportes son fundamentales para la validación de cobertura de esta investigación académica de Magíster en la Escuela de Ingeniería Informática de la PUCV.
+            <h2 class="text-xl md:text-2xl font-bold text-[#2b4c7e] mb-2">¡Muchas gracias por tu participación!</h2>
+            <p class="text-xs md:text-sm text-slate-600 leading-relaxed max-w-md mx-auto mb-6 text-justify md:text-center">
+                Tus respuestas fueron registradas correctamente. Tu evaluación es invaluable para la validación de la tesis de Magíster en Ingeniería Informática de la PUCV.
             </p>
 
-            <!-- Resumen Visual -->
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-md mx-auto mb-6">
-                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Resumen de etapas validadas</h4>
-                <div class="grid grid-cols-3 gap-2 text-xs font-semibold text-slate-700">
-                    <div class="bg-white border border-green-200 text-green-800 p-2 rounded-lg">
-                        <span class="block text-green-600">✓</span> Pre-viaje
+            <!-- Resumen Visual de las 3 Etapas -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-sm mx-auto mb-7">
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5">Etapas Validadas</p>
+                <div class="grid grid-cols-3 gap-2 text-xs font-semibold">
+                    <div class="bg-white border border-emerald-200 text-emerald-800 p-2 rounded-lg">
+                        <span class="block text-emerald-600 font-bold">✓</span> 🧳 Pre
                     </div>
-                    <div class="bg-white border border-green-200 text-green-800 p-2 rounded-lg">
-                        <span class="block text-green-600">✓</span> Durante
+                    <div class="bg-white border border-emerald-200 text-emerald-800 p-2 rounded-lg">
+                        <span class="block text-emerald-600 font-bold">✓</span> 🏔️ Durante
                     </div>
-                    <div class="bg-white border border-green-200 text-green-800 p-2 rounded-lg">
-                        <span class="block text-green-600">✓</span> Post-viaje
+                    <div class="bg-white border border-emerald-200 text-emerald-800 p-2 rounded-lg">
+                        <span class="block text-emerald-600 font-bold">✓</span> 🏡 Post
                     </div>
                 </div>
             </div>
 
-            <p id="envio-status" class="text-xs text-slate-400">Datos guardados en el sistema académico.</p>
+            <!-- BLOQUE DE DIFUSIÓN / COMPARTIR (Requisito 17) -->
+            <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-4 md:p-5 text-left max-w-md mx-auto mb-4">
+                <p class="text-xs md:text-sm font-semibold text-slate-800 mb-3 text-center">
+                    ¿Podrías ayudarnos a compartir y obtener más respuestas de turistas que hayan visitado la Región de Aysén?
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <!-- Botón WhatsApp -->
+                    <button onclick="compartirWhatsApp()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-2xs transition">
+                        <span>💬</span> Compartir por WhatsApp
+                    </button>
+                    <!-- Botón Copiar Enlace -->
+                    <button onclick="copiarEnlace()" id="btn-copiar" class="flex-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-semibold py-2.5 px-3 rounded-lg text-xs flex items-center justify-center gap-1.5 transition">
+                        <span>📋</span> Copiar enlace
+                    </button>
+                </div>
+                <p id="msg-copiado" class="text-[11px] text-emerald-700 font-bold text-center mt-2 oculto">
+                    ✓ ¡Enlace copiado al portapapeles!
+                </p>
+            </div>
+            
+            <p id="estado-envio" class="text-[11px] text-slate-400 mt-2">Guardando en el sistema académico...</p>
         </section>
 
     </main>
 
-    <footer class="text-center py-4 text-xs text-slate-400">
+    <!-- PIE DE PÁGINA SIMPLE -->
+    <footer class="text-center py-4 text-xs text-slate-400 border-t border-slate-200/60 bg-white">
         Escuela de Ingeniería Informática - Pontificia Universidad Católica de Valparaíso
     </footer>
 
-    <!-- 1. CARGA EXTERNA Y PARAMETRIZADA DEL CHECKLIST -->
+    <!-- 1. CARGA EXTERNA DE LOS ÍTEMS -->
     <script src="items.js"></script>
 
-    <!-- 2. LÓGICA DE CONTROL Y ENVÍO -->
+    <!-- 2. LÓGICA DE LA APLICACIÓN -->
     <script>
         /**
          * =======================================================
-         * ZONA DE CONFIGURACIÓN PARAMETRIZADA (EDITABLE)
+         * ZONA DE CONFIGURACIÓN PARAMETRIZADA
          * =======================================================
          */
-        const APP_CONFIG = {
-            // Reemplaza esta URL con la que obtengas al desplegar el Google Apps Script:
-            GOOGLE_APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbz2xPs710f8fV7Fhbo60qrL_CZX53xzek5WAZq_tyeml5Y8DS9zMW_TGd4IOq7_Byx82w/exec"
+        const CONFIG = {
+            // URL implementada del Google Apps Script
+            WEBAPP_URL: "https://script.google.com/macros/s/AKfycbzt1eLE1C-PJZPFRmR5xlNWuIMIegncPS7bDCsVGE6wIHNFZeu9YB05Pebv2xo30JsJ9w/exec",
+            STORAGE_KEY: "tx_aysen_turistas_cache"
         };
 
-        /**
-         * DEFINICIÓN DE ETAPAS
-         */
-        const ETAPAS_CONFIG = [
-            { key: "pre-viaje", titulo: "Pre-viaje", desc: "Criterios vinculados a información previa, reservas y preparación." },
-            { key: "durante-viaje", titulo: "Durante el viaje", desc: "Criterios de rutas, abastecimiento, servicios, cultura y terreno." },
-            { key: "post-viaje", titulo: "Post-viaje", desc: "Criterios de canales de cierre, reclamos y fidelización." }
+        // Definición de las 3 etapas cronológicas
+        const ETAPAS = [
+            { key: "pre-viaje", titulo: "Pre-viaje", icono: "🧳", desc: "Búsqueda de información, reservas, pautas climáticas, transporte y planificación inicial." },
+            { key: "durante-viaje", titulo: "Durante el viaje", icono: "🏔️", desc: "Llegada, conectividad/señal, rutas/combustible, hospitalidad, infraestructura y cultura local." },
+            { key: "post-viaje", titulo: "Post-viaje", icono: "🏡", desc: "Cierre de la experiencia, recuerdos, canales de comentarios/reclamos y recomendación del destino." }
         ];
 
-        let indiceEtapaActual = 0;
-
-        // Estado de Respuestas del Usuario
-        const respuestasEncuesta = {
+        // Estado en memoria
+        let pantallaActual = 1;
+        let etapaActivaIdx = 0;
+        let datos = {
             filtro_visita: "",
-            evaluaciones: {
-                "pre-viaje": { likert: null, feedback: "" },
-                "durante-viaje": { likert: null, feedback: "" },
-                "post-viaje": { likert: null, feedback: "" }
+            etapas: {
+                "pre-viaje": { likert: null, obs: "" },
+                "durante-viaje": { likert: null, obs: "" },
+                "post-viaje": { likert: null, obs: "" }
             }
         };
 
-        // Navegación entre Pantallas principales
-        function irAPantalla(num) {
+        // Carga inicial y persistencia (localStorage)
+        window.addEventListener('DOMContentLoaded', () => {
+            recuperarProgreso();
+            actualizarBotonHeader();
+        });
+
+        function guardarProgreso() {
+            try {
+                localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify({
+                    pantallaActual,
+                    etapaActivaIdx,
+                    datos
+                }));
+            } catch (e) {
+                console.warn("No se pudo guardar en localStorage", e);
+            }
+        }
+
+        function recuperarProgreso() {
+            try {
+                const guardado = localStorage.getItem(CONFIG.STORAGE_KEY);
+                if (guardado) {
+                    const parsed = JSON.parse(guardado);
+                    if (parsed.datos) datos = parsed.datos;
+                    if (parsed.pantallaActual && parsed.pantallaActual > 1) {
+                        pantallaActual = parsed.pantallaActual;
+                    }
+                    if (typeof parsed.etapaActivaIdx === "number") {
+                        etapaActivaIdx = parsed.etapaActivaIdx;
+                    }
+                }
+            } catch (e) {
+                console.warn("Error leyendo localStorage", e);
+            }
+
+            // Restaurar inputs
+            if (datos.filtro_visita) {
+                const r = document.querySelector(`input[name="filtro_visita"][value="${datos.filtro_visita}"]`);
+                if (r) r.checked = true;
+            }
+
+            // Mostrar la pantalla correspondiente
+            cambiarPantalla(pantallaActual, false);
+        }
+
+        // Navegación entre Pantallas
+        function cambiarPantalla(num, guardar = true) {
+            pantallaActual = num;
             document.querySelectorAll('main > section').forEach(sec => sec.classList.add('oculto'));
-            const destino = document.getElementById(`pantalla-${num}`);
-            if (destino) destino.classList.remove('oculto');
+            
+            const dest = document.getElementById(`pantalla-${num}`);
+            if (dest) dest.classList.remove('oculto');
+
+            if (num === 4) {
+                renderizarEtapa();
+            }
+
+            actualizarBotonHeader();
+            if (guardar) guardarProgreso();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Pantalla 1: Validación de Consentimiento
-        function procesarPantalla1() {
-            const acepto = document.getElementById('chk-consentimiento').checked;
-            const err = document.getElementById('err-pantalla-1');
-            if (!acepto) {
-                err.classList.remove('oculto');
-                return;
-            }
-            err.classList.add('oculto');
-            irAPantalla(2);
-        }
-
-        // Pantalla 2: Validación de Filtro
-        function procesarFiltro() {
-            const seleccionado = document.querySelector('input[name="filtro-turista"]:checked');
-            const err = document.getElementById('err-pantalla-2');
-            if (!seleccionado) {
-                err.classList.remove('oculto');
-                return;
-            }
-            err.classList.add('oculto');
-            respuestasEncuesta.filtro_visita = seleccionado.value;
-
-            if (seleccionado.value === "no") {
-                document.getElementById('pantalla-2').classList.add('oculto');
-                document.getElementById('pantalla-descarte').classList.remove('oculto');
+        function actualizarBotonHeader() {
+            const btn = document.getElementById('btn-volver-header');
+            if (pantallaActual > 1 && pantallaActual !== 5) {
+                btn.classList.remove('oculto');
             } else {
-                irAPantalla(3);
+                btn.classList.add('oculto');
             }
         }
 
-        // Iniciar Validación de Etapas (Pantalla 4)
-        function iniciarEvaluacionEtapas() {
-            indiceEtapaActual = 0;
-            renderizarEtapaActiva();
-            irAPantalla(4);
+        function retrocederPantallaGeneral() {
+            if (pantallaActual === 2) cambiarPantalla(1);
+            else if (pantallaActual === 3) cambiarPantalla(2);
+            else if (pantallaActual === 4) {
+                if (etapaActivaIdx > 0) {
+                    saltarAEtapa(etapaActivaIdx - 1);
+                } else {
+                    cambiarPantalla(3);
+                }
+            } else if (pantallaActual === "descarte") {
+                cambiarPantalla(2);
+            }
         }
 
-        // Renderizado Dinámico de Ítems según la Etapa Activa
-        function renderizarEtapaActiva() {
-            const etapaActual = ETAPAS_CONFIG[indiceEtapaActual];
-            const dataGuardada = respuestasEncuesta.evaluaciones[etapaActual.key];
+        // Pantalla 1 -> 2
+        function validarPaso1() {
+            const chk = document.getElementById('chk-consentimiento');
+            const err = document.getElementById('err-pantalla-1');
+            if (!chk.checked) {
+                err.classList.remove('oculto');
+                return;
+            }
+            err.classList.add('oculto');
+            cambiarPantalla(2);
+        }
 
-            // 1. Encabezados y Progreso
-            document.getElementById('etapa-titulo').innerText = etapaActual.titulo;
-            document.getElementById('etapa-nombre-pregunta').innerText = etapaActual.titulo;
-            document.getElementById('txt-progreso-etapa').innerText = `Etapa ${indiceEtapaActual + 1} de 3`;
-            
-            const pct = Math.round(((indiceEtapaActual + 1) / 3) * 100);
-            document.getElementById('txt-porcentaje-progreso').innerText = `${pct}%`;
-            document.getElementById('barra-progreso').style.width = `${pct}%`;
+        // Pantalla 2 -> 3 (Filtro)
+        function procesarFiltro() {
+            const opt = document.querySelector('input[name="filtro_visita"]:checked');
+            const err = document.getElementById('err-pantalla-2');
+            if (!opt) {
+                err.classList.remove('oculto');
+                return;
+            }
+            err.classList.add('oculto');
+            datos.filtro_visita = opt.value;
+            guardarProgreso();
 
-            // 2. Tabs visuales
+            if (opt.value === "No") {
+                pantallaActual = "descarte";
+                document.querySelectorAll('main > section').forEach(s => s.classList.add('oculto'));
+                document.getElementById('pantalla-descarte').classList.remove('oculto');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                cambiarPantalla(3);
+            }
+        }
+
+        // Pantalla 3 -> 4
+        function iniciarEtapas() {
+            etapaActivaIdx = 0;
+            cambiarPantalla(4);
+        }
+
+        // ========================================================
+        // RENDERIZADO DE ETAPAS E ÍTEMS (FLUJO NATURAL)
+        // ========================================================
+        function renderizarEtapa() {
+            const etapaActual = ETAPAS[etapaActivaIdx];
+            const dataGuardada = datos.etapas[etapaActual.key];
+
+            // 1. Actualizar Textos y Barra
+            document.getElementById('titulo-etapa-activa').innerText = etapaActual.titulo;
+            document.getElementById('subtitulo-etapa-activa').innerText = etapaActual.desc;
+            document.getElementById('badge-etapa-icono').innerText = etapaActual.icono;
+            document.getElementById('nombre-etapa-pregunta').innerText = etapaActual.titulo;
+            document.getElementById('lbl-nombre-etapa-likert').innerText = etapaActual.titulo;
+
+            const porcentaje = Math.round(((etapaActivaIdx + 1) / 3) * 100);
+            document.getElementById('barra-progreso').style.width = `${porcentaje}%`;
+
+            // 2. Actualizar Tabs visuales
             for (let i = 0; i < 3; i++) {
                 const tab = document.getElementById(`tab-${i}`);
-                if (i === indiceEtapaActual) {
-                    tab.className = "py-1.5 text-institucional border-b-2 border-institucional font-bold";
+                if (i === etapaActivaIdx) {
+                    tab.classList.add('activa');
                 } else {
-                    tab.className = "py-1.5 text-slate-400 border-b-2 border-transparent";
+                    tab.classList.remove('activa');
                 }
             }
 
-            // 3. Render de tarjetas desde items.js
-            const contenedor = document.getElementById('contenedor-items');
-            contenedor.innerHTML = "";
+            // 3. Filtrar ítems de esta etapa desde items.js
+            const listaContenedor = document.getElementById('lista-items-flujo');
+            listaContenedor.innerHTML = "";
 
             if (typeof checklistItems === 'undefined' || !checklistItems.length) {
-                contenedor.innerHTML = `<p class="text-sm text-red-500">Error: No se encontró el archivo items.js o está vacío.</p>`;
+                listaContenedor.innerHTML = `<div class="p-4 bg-red-50 text-red-700 text-sm rounded-lg">Error: no se encontró el archivo items.js</div>`;
                 return;
             }
 
-            const itemsDeEstaEtapa = checklistItems.filter(item => item.etapa === etapaActual.key);
+            const itemsDeEstaEtapa = checklistItems.filter(i => i.etapa === etapaActual.key);
 
+            // Extraer temáticas únicas de esta etapa para el mapa mental
+            const tematicas = [...new Set(itemsDeEstaEtapa.map(i => i.categoria))];
+            const contTematicas = document.getElementById('contenedor-tematicas-etapa');
+            contTematicas.innerHTML = tematicas.map(t => `<span class="badge-categoria">📁 ${t}</span>`).join('');
+
+            // Renderizar cada ítem en flujo natural
             itemsDeEstaEtapa.forEach(item => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-3.5 rounded-lg border border-slate-200 shadow-sm flex flex-col gap-1.5";
-                
-                // Formatear badges de dimensiones
-                const badges = item.dimension.split('/').map(dim => {
-                    return `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">${dim.trim()}</span>`;
+                card.className = "bg-white p-3.5 md:p-4 rounded-xl border border-tema-borde shadow-xs";
+
+                // Formatear badges de Dimensiones TX
+                const dimensionesHTML = item.dimension.split('/').map(dim => {
+                    const limpia = dim.trim().toLowerCase();
+                    let clase = "dim-default";
+                    if (limpia.includes("cognitiva")) clase = "dim-cognitiva";
+                    else if (limpia.includes("pragmática") || limpia.includes("pragmatica")) clase = "dim-pragmatica";
+                    else if (limpia.includes("sensorial")) clase = "dim-sensorial";
+                    else if (limpia.includes("relacional")) clase = "dim-relacional";
+                    else if (limpia.includes("emocional")) clase = "dim-emocional";
+                    else if (limpia.includes("sostenibilidad")) clase = "dim-sostenibilidad";
+                    else if (limpia.includes("cultura local")) clase = "dim-culturalocal";
+                    else if (limpia.includes("conductual")) clase = "dim-conductual";
+                    else if (limpia.includes("novedad")) clase = "dim-novedad";
+                    return `<span class="tag-tx ${clase}">${dim.trim()}</span>`;
                 }).join(' ');
 
                 card.innerHTML = `
-                    <div class="flex justify-between items-center gap-2">
-                        <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">${item.id}</span>
-                        <div class="flex flex-wrap gap-1 justify-end">${badges}</div>
+                    <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">Ítem ${item.numero}</span>
+                            <span class="text-[11px] text-slate-500 font-medium">${item.categoria}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <span class="text-[10px] font-semibold text-slate-400">Dimensión TX:</span>
+                            ${dimensionesHTML}
+                        </div>
                     </div>
-                    <p class="text-xs md:text-sm text-slate-800 font-medium leading-relaxed">${item.texto}</p>
+                    <p class="text-xs md:text-sm text-slate-700 leading-relaxed font-normal">${item.texto}</p>
                 `;
-                contenedor.appendChild(card);
+                listaContenedor.appendChild(card);
             });
 
-            // 4. Restaurar valores previos
-            document.querySelectorAll('.likert-btn').forEach(btn => btn.classList.remove('selected'));
+            // 4. Restaurar respuestas guardadas en los inputs
+            document.querySelectorAll('.btn-likert').forEach(btn => btn.classList.remove('selected'));
             if (dataGuardada.likert) {
-                const btnSeleccionado = document.querySelector(`.likert-btn[data-valor="${dataGuardada.likert}"]`);
-                if (btnSeleccionado) btnSeleccionado.classList.add('selected');
+                const btnSel = document.querySelector(`.btn-likert[data-val="${dataGuardada.likert}"]`);
+                if (btnSel) btnSel.classList.add('selected');
             }
-            document.getElementById('input-feedback').value = dataGuardada.feedback || "";
+            document.getElementById('txt-observacion').value = dataGuardada.obs || "";
             document.getElementById('err-likert').classList.add('oculto');
 
-            // 5. Botones de Navegación
-            const btnAnt = document.getElementById('btn-etapa-anterior');
-            const btnSig = document.getElementById('btn-etapa-siguiente');
+            // 5. Configurar botones de navegación
+            const btnPrev = document.getElementById('btn-etapa-prev');
+            const btnNext = document.getElementById('btn-etapa-next');
 
-            if (indiceEtapaActual === 0) {
-                btnAnt.classList.add('invisible');
+            if (etapaActivaIdx === 0) {
+                btnPrev.innerText = "← Volver al Mapa";
             } else {
-                btnAnt.classList.remove('invisible');
+                btnPrev.innerText = "← Etapa Anterior";
             }
 
-            if (indiceEtapaActual === ETAPAS_CONFIG.length - 1) {
-                btnSig.innerText = "Finalizar y Enviar";
-                btnSig.className = "bg-green-700 hover:bg-green-800 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-xs md:text-sm";
+            if (etapaActivaIdx === 2) {
+                btnNext.innerText = "Finalizar y Enviar ✓";
+                btnNext.className = "w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-xs md:text-sm";
             } else {
-                btnSig.innerText = "Siguiente Etapa →";
-                btnSig.className = "bg-institucional hover:bg-blue-900 text-white font-bold py-2.5 px-6 rounded-lg shadow transition text-xs md:text-sm";
+                btnNext.innerText = "Siguiente Etapa →";
+                btnNext.className = "w-2/3 bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-xs md:text-sm";
             }
-
-            // Scroll arriba en el contenedor
-            contenedor.scrollTop = 0;
         }
 
-        // Selección de Escala Likert
-        function setLikert(valor) {
-            const etapaActual = ETAPAS_CONFIG[indiceEtapaActual].key;
-            respuestasEncuesta.evaluaciones[etapaActual].likert = valor;
+        // Marcar Likert
+        function marcarLikert(val) {
+            const etapaActual = ETAPAS[etapaActivaIdx].key;
+            datos.etapas[etapaActual].likert = val;
 
-            document.querySelectorAll('.likert-btn').forEach(btn => btn.classList.remove('selected'));
-            const btnActivo = document.querySelector(`.likert-btn[data-valor="${valor}"]`);
-            if (btnActivo) btnActivo.classList.add('selected');
+            document.querySelectorAll('.btn-likert').forEach(b => b.classList.remove('selected'));
+            const b = document.querySelector(`.btn-likert[data-val="${val}"]`);
+            if (b) b.classList.add('selected');
 
             document.getElementById('err-likert').classList.add('oculto');
+            guardarProgreso();
         }
 
-        // Retroceder Etapa
-        function retrocederEtapa() {
-            if (indiceEtapaActual > 0) {
-                const etapaActual = ETAPAS_CONFIG[indiceEtapaActual].key;
-                respuestasEncuesta.evaluaciones[etapaActual].feedback = document.getElementById('input-feedback').value.trim();
-                indiceEtapaActual--;
-                renderizarEtapaActiva();
+        function guardarTextoObs(txt) {
+            const etapaActual = ETAPAS[etapaActivaIdx].key;
+            datos.etapas[etapaActual].obs = txt;
+            guardarProgreso();
+        }
+
+        // Navegación de Etapas
+        function saltarAEtapa(idx) {
+            etapaActivaIdx = idx;
+            renderizarEtapa();
+            guardarProgreso();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function etapaAnterior() {
+            if (etapaActivaIdx > 0) {
+                saltarAEtapa(etapaActivaIdx - 1);
+            } else {
+                cambiarPantalla(3);
             }
         }
 
-        // Avanzar Etapa o Finalizar
-        function avanzarEtapa() {
-            const etapaActual = ETAPAS_CONFIG[indiceEtapaActual].key;
-            const evalActual = respuestasEncuesta.evaluaciones[etapaActual];
-            
-            // Validar Likert obligatorio
+        function etapaSiguiente() {
+            const etapaActual = ETAPAS[etapaActivaIdx].key;
+            const evalActual = datos.etapas[etapaActual];
+
+            // Likert es obligatorio para avanzar
             if (!evalActual.likert) {
                 document.getElementById('err-likert').classList.remove('oculto');
+                // Desplazar suavemente hasta el bloque de error
+                document.getElementById('likert-botones').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
 
-            evalActual.feedback = document.getElementById('input-feedback').value.trim();
-
-            if (indiceEtapaActual < ETAPAS_CONFIG.length - 1) {
-                indiceEtapaActual++;
-                renderizarEtapaActiva();
+            if (etapaActivaIdx < 2) {
+                saltarAEtapa(etapaActivaIdx + 1);
             } else {
-                enviarRespuestasFinales();
+                finalizarYEnviar();
             }
         }
 
-        // Envío final a Google Apps Script
-        function enviarRespuestasFinales() {
-            irAPantalla(5);
+        // ========================================================
+        // ENVÍO DE DATOS AL APPS SCRIPT
+        // ========================================================
+        function finalizarYEnviar() {
+            cambiarPantalla(5);
 
             const payload = {
-                fecha: new Date().toLocaleString("es-CL"),
-                filtro_visita: respuestasEncuesta.filtro_visita,
-                pre_viaje_likert: respuestasEncuesta.evaluaciones["pre-viaje"].likert,
-                pre_viaje_obs: respuestasEncuesta.evaluaciones["pre-viaje"].feedback,
-                durante_likert: respuestasEncuesta.evaluaciones["durante-viaje"].likert,
-                durante_obs: respuestasEncuesta.evaluaciones["durante-viaje"].feedback,
-                post_viaje_likert: respuestasEncuesta.evaluaciones["post-viaje"].likert,
-                post_viaje_obs: respuestasEncuesta.evaluaciones["post-viaje"].feedback
+                filtro_visita: datos.filtro_visita,
+                pre_viaje_likert: datos.etapas["pre-viaje"].likert,
+                pre_viaje_obs: datos.etapas["pre-viaje"].obs,
+                durante_likert: datos.etapas["durante-viaje"].likert,
+                durante_obs: datos.etapas["durante-viaje"].obs,
+                post_viaje_likert: datos.etapas["post-viaje"].likert,
+                post_viaje_obs: datos.etapas["post-viaje"].obs
             };
 
-            console.log("Enviando resultados a Apps Script:", payload);
+            const param = new URLSearchParams();
+            param.append("data", JSON.stringify(payload));
 
-            // Envío con fetch utilizando URLSearchParams para evitar problemas de CORS
-            const formBody = new URLSearchParams();
-            formBody.append("datos", JSON.stringify(payload));
-
-            fetch(APP_CONFIG.GOOGLE_APPS_SCRIPT_URL, {
+            fetch(CONFIG.WEBAPP_URL, {
                 method: "POST",
                 mode: "no-cors",
-                body: formBody
+                body: param
             }).then(() => {
-                document.getElementById('envio-status').innerText = "✓ Registro completado exitosamente.";
+                document.getElementById('estado-envio').innerText = "✓ Respuestas registradas en el Google Sheet oficial.";
+                // Limpiar caché local al completarse
+                localStorage.removeItem(CONFIG.STORAGE_KEY);
             }).catch(err => {
-                console.error("Error al registrar:", err);
-                document.getElementById('envio-status').innerText = "Registro almacenado localmente.";
+                console.error("Error al enviar", err);
+                document.getElementById('estado-envio').innerText = "✓ Respuestas almacenadas localmente.";
+            });
+        }
+
+        // ========================================================
+        // FUNCIONES PARA COMPARTIR (Requisito 17)
+        // ========================================================
+        function obtenerUrlEncuesta() {
+            return window.location.href.split('#')[0];
+        }
+
+        function compartirWhatsApp() {
+            const url = obtenerUrlEncuesta();
+            const texto = encodeURIComponent(
+                `¡Hola! Te invito a participar en esta breve validación sobre la experiencia del turista en la Región de Aysén para una investigación de Magíster de la PUCV: ${url}`
+            );
+            window.open(`https://api.whatsapp.com/send?text=${texto}`, '_blank');
+        }
+
+        function copiarEnlace() {
+            const url = obtenerUrlEncuesta();
+            navigator.clipboard.writeText(url).then(() => {
+                const msg = document.getElementById('msg-copiado');
+                msg.classList.remove('oculto');
+                setTimeout(() => msg.classList.add('oculto'), 3500);
+            }).catch(() => {
+                alert("Enlace: " + url);
             });
         }
     </script>
