@@ -221,6 +221,22 @@
                 Para evaluar la experiencia de forma integral, dividimos el viaje en 3 etapas cronológicas. Queremos comprobar si nuestros criterios cubren todo lo que viviste desde la planificación en tu hogar hasta el regreso.
             </p>
 
+            <!-- DISCLAIMER DESTACADO DE INDUCCIÓN (Punto de control 1) -->
+            <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg mb-5 text-left shadow-2xs">
+                <div class="flex items-start gap-2.5">
+                    <span class="text-lg leading-none mt-0.5">📌</span>
+                    <div class="text-xs md:text-sm text-amber-950 leading-relaxed">
+                        <p class="font-bold text-amber-900 mb-1">Aclaración importante antes de comenzar:</p>
+                        <p class="mb-1.5">
+                            El checklist que verás a continuación está diseñado para <strong>evaluar servicios turísticos</strong> (alojamientos, agencias, tours, gastronomía, etc.) según qué tan preparados están para brindar una buena experiencia. <strong>No es una encuesta aplicada a turistas ni evalúa cómo te fue en tu viaje.</strong>
+                        </p>
+                        <p>
+                            Por ello, sus ítems están redactados pensando en evaluar a un servicio. <strong>Tu rol es revisar los temas que aborda cada etapa</strong> y decirnos si cubren todo lo que viviste, necesitaste o enfrentaste en Aysén.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div class="space-y-3 mb-6">
                 <!-- Etapa 1 -->
                 <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex items-start gap-3.5">
@@ -300,6 +316,19 @@
                 </div>
             </div>
 
+            <!-- DISCLAIMER DESTACADO SUPERIOR EN CADA ETAPA (Punto de control 2) -->
+            <div class="bg-amber-50 border border-amber-300 rounded-xl p-3.5 md:p-4 mb-4 shadow-2xs">
+                <div class="flex items-start gap-2.5">
+                    <span class="text-base md:text-lg leading-none mt-0.5">💡</span>
+                    <div class="text-xs text-amber-950 leading-relaxed">
+                        <p class="font-bold text-amber-900 mb-0.5">¿Cómo leer estos ítems?</p>
+                        <p>
+                            Este instrumento está diseñado para <strong>evaluar servicios turísticos</strong> (no es una encuesta dirigida a turistas ni califica tu viaje personal). Revisa los criterios fijándote en <strong>si los temas que abordan cubren todas tus vivencias y necesidades</strong> en esta etapa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Cabecera de la Etapa Activa -->
             <div class="bg-white rounded-xl p-4 md:p-5 border border-tema-borde shadow-xs mb-4">
                 <div class="flex items-center gap-2 mb-1">
@@ -307,7 +336,7 @@
                     <h2 id="titulo-etapa-activa" class="text-lg md:text-xl font-bold text-[#2b4c7e]">Pre-viaje</h2>
                 </div>
                 <p id="subtitulo-etapa-activa" class="text-xs md:text-sm text-slate-500 mb-3">
-                    Revisa los siguientes ítems definidos para esta etapa y luego evalúa la cobertura global al final.
+                    Revisa los siguientes ítems definidos para evaluar servicios en esta etapa y luego califica su cobertura al final.
                 </p>
 
                 <div class="pt-2 border-t border-slate-100">
@@ -324,8 +353,10 @@
                 <h3 class="font-bold text-[#2b4c7e] text-sm md:text-base mb-1">
                     Evaluación de Cobertura: <span id="nombre-etapa-pregunta">Pre-viaje</span>
                 </h3>
-                <p class="text-xs text-slate-500 mb-5">
-                    Responde estas preguntas considerando la totalidad de los ítems revisados arriba.
+                
+                <!-- RECORDATORIO BREVE ANTES DE CALIFICAR (Punto de control 3) -->
+                <p class="text-[11px] md:text-xs text-amber-900 bg-amber-50/90 border border-amber-200 rounded-lg px-3 py-2 mb-4 leading-snug">
+                    <strong>Recuerda:</strong> No califiques cómo estuvo tu viaje ni la redacción orientada a servicios; evalúa qué tan completos son los <strong>temas presentados</strong> para abarcar la experiencia real en Aysén.
                 </p>
 
                 <!-- Pregunta 1: Likert 1 a 5 (Obligatorio) -->
@@ -437,14 +468,12 @@
          MODAL EMERGENTE: ALERTA DE ETAPAS PENDIENTES
          ======================================================== -->
     <div id="modal-faltante" class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 oculto">
-        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center border border-slate-200 animate-bounce-short">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center border border-slate-200">
             <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
                 ⚠️
             </div>
             <h3 class="text-base font-bold text-slate-800 mb-2">Evaluación Incompleta</h3>
-            <p class="text-xs md:text-sm text-slate-600 mb-4 leading-relaxed" id="modal-faltante-mensaje">
-                <!-- Se inyecta dinámicamente -->
-            </p>
+            <p class="text-xs md:text-sm text-slate-600 mb-4 leading-relaxed" id="modal-faltante-mensaje"></p>
             <button onclick="irAEtapaFaltante()" class="w-full bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-2.5 px-4 rounded-lg text-sm shadow-sm transition">
                 Ir a responder etapa
             </button>
@@ -479,7 +508,7 @@
 
         let pantallaActual = 1;
         let etapaActivaIdx = 0;
-        let etapaFaltanteRedireccion = 0; // Para el modal
+        let etapaFaltanteRedireccion = 0;
 
         let datos = {
             filtro_visita: "",
@@ -551,302 +580,4 @@
         function actualizarBotonHeader() {
             const btn = document.getElementById('btn-volver-header');
             if (pantallaActual > 1 && pantallaActual !== 5) {
-                btn.classList.remove('oculto');
-            } else {
-                btn.classList.add('oculto');
-            }
-        }
-
-        function retrocederPantallaGeneral() {
-            if (pantallaActual === 2) cambiarPantalla(1);
-            else if (pantallaActual === 3) cambiarPantalla(2);
-            else if (pantallaActual === 4) {
-                if (etapaActivaIdx > 0) {
-                    saltarAEtapa(etapaActivaIdx - 1);
-                } else {
-                    cambiarPantalla(3);
-                }
-            } else if (pantallaActual === "descarte") {
-                cambiarPantalla(2);
-            }
-        }
-
-        function validarPaso1() {
-            const chk = document.getElementById('chk-consentimiento');
-            const err = document.getElementById('err-pantalla-1');
-            if (!chk.checked) {
-                err.classList.remove('oculto');
-                return;
-            }
-            err.classList.add('oculto');
-            cambiarPantalla(2);
-        }
-
-        function procesarFiltro() {
-            const opt = document.querySelector('input[name="filtro_visita"]:checked');
-            const err = document.getElementById('err-pantalla-2');
-            if (!opt) {
-                err.classList.remove('oculto');
-                return;
-            }
-            err.classList.add('oculto');
-            datos.filtro_visita = opt.value;
-            guardarProgreso();
-
-            if (opt.value === "No") {
-                pantallaActual = "descarte";
-                document.querySelectorAll('main > section').forEach(s => s.classList.add('oculto'));
-                document.getElementById('pantalla-descarte').classList.remove('oculto');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                cambiarPantalla(3);
-            }
-        }
-
-        function iniciarEtapas() {
-            etapaActivaIdx = 0;
-            cambiarPantalla(4);
-        }
-
-        function renderizarEtapa() {
-            const etapaActual = ETAPAS[etapaActivaIdx];
-            const dataGuardada = datos.etapas[etapaActual.key];
-
-            document.getElementById('titulo-etapa-activa').innerText = etapaActual.titulo;
-            document.getElementById('subtitulo-etapa-activa').innerText = etapaActual.desc;
-            document.getElementById('badge-etapa-icono').innerText = etapaActual.icono;
-            document.getElementById('nombre-etapa-pregunta').innerText = etapaActual.titulo;
-            document.getElementById('lbl-nombre-etapa-likert').innerText = etapaActual.titulo;
-
-            const porcentaje = Math.round(((etapaActivaIdx + 1) / 3) * 100);
-            document.getElementById('barra-progreso').style.width = `${porcentaje}%`;
-
-            for (let i = 0; i < 3; i++) {
-                const tab = document.getElementById(`tab-${i}`);
-                if (i === etapaActivaIdx) {
-                    tab.classList.add('activa');
-                } else {
-                    tab.classList.remove('activa');
-                }
-            }
-
-            const listaContenedor = document.getElementById('lista-items-flujo');
-            listaContenedor.innerHTML = "";
-
-            if (typeof checklistItems === 'undefined' || !checklistItems.length) {
-                listaContenedor.innerHTML = `<div class="p-4 bg-red-50 text-red-700 text-sm rounded-lg">Error: no se encontró el archivo items.js</div>`;
-                return;
-            }
-
-            const itemsDeEstaEtapa = checklistItems.filter(i => i.etapa === etapaActual.key);
-
-            const tematicas = [...new Set(itemsDeEstaEtapa.map(i => i.categoria))];
-            const contTematicas = document.getElementById('contenedor-tematicas-etapa');
-            contTematicas.innerHTML = tematicas.map(t => `<span class="badge-categoria">📁 ${t}</span>`).join('');
-
-            itemsDeEstaEtapa.forEach(item => {
-                const card = document.createElement('div');
-                card.className = "bg-white p-3.5 md:p-4 rounded-xl border border-tema-borde shadow-xs";
-
-                const dimensionesHTML = item.dimension.split('/').map(dim => {
-                    const limpia = dim.trim().toLowerCase();
-                    let clase = "dim-default";
-                    if (limpia.includes("cognitiva")) clase = "dim-cognitiva";
-                    else if (limpia.includes("pragmática") || limpia.includes("pragmatica")) clase = "dim-pragmatica";
-                    else if (limpia.includes("sensorial")) clase = "dim-sensorial";
-                    else if (limpia.includes("relacional")) clase = "dim-relacional";
-                    else if (limpia.includes("emocional")) clase = "dim-emocional";
-                    else if (limpia.includes("sostenibilidad")) clase = "dim-sostenibilidad";
-                    else if (limpia.includes("cultura local")) clase = "dim-culturalocal";
-                    else if (limpia.includes("conductual")) clase = "dim-conductual";
-                    else if (limpia.includes("novedad")) clase = "dim-novedad";
-                    return `<span class="tag-tx ${clase}">${dim.trim()}</span>`;
-                }).join(' ');
-
-                card.innerHTML = `
-                    <div class="flex flex-wrap items-center justify-between gap-1.5 mb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded">Ítem ${item.numero}</span>
-                            <span class="text-[11px] text-slate-500 font-medium">${item.categoria}</span>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <span class="text-[10px] font-semibold text-slate-400">Dimensión TX:</span>
-                            ${dimensionesHTML}
-                        </div>
-                    </div>
-                    <p class="text-xs md:text-sm text-slate-700 leading-relaxed font-normal">${item.texto}</p>
-                `;
-                listaContenedor.appendChild(card);
-            });
-
-            document.querySelectorAll('.btn-likert').forEach(btn => btn.classList.remove('selected'));
-            if (dataGuardada.likert) {
-                const btnSel = document.querySelector(`.btn-likert[data-val="${dataGuardada.likert}"]`);
-                if (btnSel) btnSel.classList.add('selected');
-            }
-            document.getElementById('txt-observacion').value = dataGuardada.obs || "";
-            document.getElementById('err-likert').classList.add('oculto');
-
-            const btnPrev = document.getElementById('btn-etapa-prev');
-            const btnNext = document.getElementById('btn-etapa-next');
-
-            if (etapaActivaIdx === 0) {
-                btnPrev.innerText = "← Volver al Mapa";
-            } else {
-                btnPrev.innerText = "← Etapa Anterior";
-            }
-
-            if (etapaActivaIdx === 2) {
-                btnNext.innerText = "Finalizar y Enviar ✓";
-                btnNext.className = "w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-xs md:text-sm";
-            } else {
-                btnNext.innerText = "Siguiente Etapa →";
-                btnNext.className = "w-2/3 bg-[#2b4c7e] hover:bg-[#223c63] text-white font-bold py-3 px-4 rounded-lg shadow-sm transition text-xs md:text-sm";
-            }
-        }
-
-        function marcarLikert(val) {
-            const etapaActual = ETAPAS[etapaActivaIdx].key;
-            datos.etapas[etapaActual].likert = val;
-
-            document.querySelectorAll('.btn-likert').forEach(b => b.classList.remove('selected'));
-            const b = document.querySelector(`.btn-likert[data-val="${val}"]`);
-            if (b) b.classList.add('selected');
-
-            document.getElementById('err-likert').classList.add('oculto');
-            guardarProgreso();
-        }
-
-        function guardarTextoObs(txt) {
-            const etapaActual = ETAPAS[etapaActivaIdx].key;
-            datos.etapas[etapaActual].obs = txt;
-            guardarProgreso();
-        }
-
-        function saltarAEtapa(idx) {
-            etapaActivaIdx = idx;
-            renderizarEtapa();
-            guardarProgreso();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function etapaAnterior() {
-            if (etapaActivaIdx > 0) {
-                saltarAEtapa(etapaActivaIdx - 1);
-            } else {
-                cambiarPantalla(3);
-            }
-        }
-
-        // ========================================================
-        // VALIDACIÓN ESTRICTA DE LAS 3 ETAPAS
-        // ========================================================
-        function buscarPrimeraEtapaIncompleta() {
-            for (let i = 0; i < ETAPAS.length; i++) {
-                const key = ETAPAS[i].key;
-                if (!datos.etapas[key].likert) {
-                    return i; // Retorna el índice de la etapa que no tiene Likert
-                }
-            }
-            return -1; // Todas completas
-        }
-
-        function mostrarModalFaltante(indiceIncompleto) {
-            etapaFaltanteRedireccion = indiceIncompleto;
-            const etapa = ETAPAS[indiceIncompleto];
-            const msg = `Para enviar la encuesta es obligatorio calificar la cobertura en las 3 etapas. Aún no has respondido la escala de la etapa: <strong>${etapa.icono} ${etapa.titulo}</strong>.`;
-            document.getElementById('modal-faltante-mensaje').innerHTML = msg;
-            document.getElementById('modal-faltante').classList.remove('oculto');
-        }
-
-        function irAEtapaFaltante() {
-            document.getElementById('modal-faltante').classList.add('oculto');
-            saltarAEtapa(etapaFaltanteRedireccion);
-            setTimeout(() => {
-                const bloque = document.getElementById('bloque-evaluacion-likert');
-                bloque.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                document.getElementById('err-likert').classList.remove('oculto');
-            }, 250);
-        }
-
-        function etapaSiguiente() {
-            const etapaActualKey = ETAPAS[etapaActivaIdx].key;
-            const evalActual = datos.etapas[etapaActualKey];
-
-            // 1. Validar la etapa presente antes de avanzar
-            if (!evalActual.likert) {
-                document.getElementById('err-likert').classList.remove('oculto');
-                document.getElementById('bloque-evaluacion-likert').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            // 2. Si no es la última etapa, avanza normalmente
-            if (etapaActivaIdx < 2) {
-                saltarAEtapa(etapaActivaIdx + 1);
-            } else {
-                // 3. Si está en la etapa 3 y da clic a "Finalizar y Enviar", AUDITA LAS 3 ETAPAS
-                const etapaIncompleta = buscarPrimeraEtapaIncompleta();
-                if (etapaIncompleta !== -1) {
-                    mostrarModalFaltante(etapaIncompleta);
-                    return;
-                }
-                
-                // Si las 3 están respondidas, envía
-                finalizarYEnviar();
-            }
-        }
-
-        function finalizarYEnviar() {
-            cambiarPantalla(5);
-
-            const payload = {
-                filtro_visita: datos.filtro_visita,
-                pre_viaje_likert: datos.etapas["pre-viaje"].likert,
-                pre_viaje_obs: datos.etapas["pre-viaje"].obs,
-                durante_likert: datos.etapas["durante-viaje"].likert,
-                durante_obs: datos.etapas["durante-viaje"].obs,
-                post_viaje_likert: datos.etapas["post-viaje"].likert,
-                post_viaje_obs: datos.etapas["post-viaje"].obs
-            };
-
-            const param = new URLSearchParams();
-            param.append("data", JSON.stringify(payload));
-
-            fetch(CONFIG.WEBAPP_URL, {
-                method: "POST",
-                mode: "no-cors",
-                body: param
-            }).then(() => {
-                document.getElementById('estado-envio').innerText = "✓ Respuestas registradas en el Google Sheet oficial.";
-                localStorage.removeItem(CONFIG.STORAGE_KEY);
-            }).catch(err => {
-                console.error("Error al enviar", err);
-                document.getElementById('estado-envio').innerText = "✓ Respuestas almacenadas localmente.";
-            });
-        }
-
-        function obtenerUrlEncuesta() {
-            return window.location.href.split('#')[0];
-        }
-
-        function compartirWhatsApp() {
-            const url = obtenerUrlEncuesta();
-            const texto = encodeURIComponent(
-                `¡Hola! Te invito a participar en esta breve validación sobre la experiencia del turista en la Región de Aysén para una investigación de Magíster de la PUCV: ${url}`
-            );
-            window.open(`https://api.whatsapp.com/send?text=${texto}`, '_blank');
-        }
-
-        function copiarEnlace() {
-            const url = obtenerUrlEncuesta();
-            navigator.clipboard.writeText(url).then(() => {
-                const msg = document.getElementById('msg-copiado');
-                msg.classList.remove('oculto');
-                setTimeout(() => msg.classList.add('oculto'), 3500);
-            }).catch(() => {
-                alert("Enlace: " + url);
-            });
-        }
-    </script>
-</body>
-</html>
+                btn.
